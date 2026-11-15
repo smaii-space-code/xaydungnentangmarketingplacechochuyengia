@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: page(~{::main})}"><main class="proposal-area"><link rel="stylesheet" th:href="@{/css/proposals.css}">
+<div class="page-head"><h1>Rà soát và lập hợp đồng</h1></div><section class="panel narrow">
+<p class="proposal-state proposal-state--accepted" th:text="${row.label}"></p><h2 th:text="${row.requestTitle}"></h2>
+<dl class="proposal-summary"><div><dt>Khách hàng</dt><dd th:text="${row.customerName}"></dd></div><div><dt>Chuyên gia</dt><dd th:text="${row.expertName}"></dd></div><div><dt>Tổng giá trị dự kiến</dt><dd th:text="${@fmt.money(row.price)}"></dd></div><div th:if="${row.days != null}"><dt>Thời gian đề xuất</dt><dd th:text="${row.days+' ngày'}"></dd></div></dl>
+<h3>Phương án từ đề xuất</h3><p class="pre" th:text="${row.plan}"></p>
+<p>Hợp đồng được điền từ đề xuất đã lưu. Sau khi tạo, khách hàng có thể rà soát nội dung, tổng giá trị và thiết lập các mốc theo quy tắc hiện có. Hai bên cần xác nhận cùng phiên bản để hợp đồng có hiệu lực.</p>
+<p class="hint">Chấp thuận đề xuất chưa phải ký hợp đồng; bước này không tự tạo mốc, ký quỹ hoặc giải ngân.</p>
+<form th:if="${row.canContinue}" th:action="@{/de-xuat/{id}/lap-hop-dong(id=${row.id})}" method="post"><div class="actions proposal-actions"><button class="btn">Xác nhận tạo hợp đồng</button><a th:href="@{/de-xuat/{id}(id=${row.id})}">Quay lại đề xuất</a></div></form>
+<p th:if="${!row.canContinue}">Đề xuất chưa đủ điều kiện lập hợp đồng. <a th:href="@{/de-xuat/{id}(id=${row.id})}">Xem trạng thái hiện tại</a>.</p>
+</section></main></html>

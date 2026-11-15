@@ -1,0 +1,98 @@
+/* Menu dùng chung: giữ cơ chế xuống dòng và đánh dấu mục hiện tại. */
+.header .site-nav {flex:1 1 420px;min-width:0}
+.header .site-nav a {max-width:100%}
+.header .site-nav a[aria-current="page"] {color:var(--blue);font-weight:600;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:7px}
+@media(max-width:1000px){.header .site-nav{flex-basis:100%}}
+/* Giới thiệu: các màu thương hiệu lấy từ connect.css; chỉ áp dụng trong about-page. */
+.about-page{--about-paper:#f7f8f2;--about-ink:var(--ink);--about-accent:var(--blue);--about-soft:var(--green);max-width:1200px;margin:0 auto;background:var(--about-paper);color:var(--about-ink);padding:clamp(24px,4vw,52px);border-radius:12px;min-width:0;overflow-wrap:break-word}
+.about-page *, .about-page *::before,.about-page *::after{box-sizing:border-box}
+.about-page [hidden]{display:none!important}
+.about-page :is(h1,h2,h3,h4,p,figure){margin-top:0}
+.about-page h1{font-size:clamp(38px,4vw,56px);line-height:1.16;letter-spacing:-.045em;font-weight:600;margin-bottom:26px}
+.about-page h1 em{font-style:italic;color:var(--about-accent)}
+.about-page h2{font-size:clamp(28px,3vw,38px);line-height:1.2;letter-spacing:-.035em;font-weight:600;margin-bottom:26px}
+.about-page h3{font-size:23px;line-height:1.3;font-weight:600;margin-bottom:18px}
+.about-page h4{font-size:22px;line-height:1.3;margin-bottom:6px}
+.about-page p,.about-page li{font-size:16px;line-height:1.7}
+.about-page .about-kicker{font-size:13px;font-weight:600;margin-bottom:20px;color:var(--about-accent);letter-spacing:.07em}
+.about-page .about-hero{display:grid;grid-template-columns:1.12fr 1fr;gap:24px;align-items:center;padding:28px 0 56px}
+.about-page .about-hero-copy{min-width:0}
+.about-page .about-lead{font-size:18px;max-width:43ch;margin-bottom:30px}
+.about-page .about-actions{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.about-page .btn{background:var(--about-accent);color:var(--white);border-radius:6px;padding:13px 22px;white-space:normal}
+.about-page .btn:hover{background:var(--navy);text-decoration:none}
+.about-page .btn span{margin-left:12px}
+.about-page .about-story-link{font-size:15px;color:var(--about-ink);text-underline-offset:5px;text-decoration:underline}
+.about-page .about-story-link span{margin-left:8px}
+.about-page .about-connection{margin:0;min-width:0}
+.about-page .about-connection svg{display:block;width:100%;height:auto;overflow:visible}
+.about-page .about-connection figcaption{font-size:14px;text-align:center;color:var(--muted);margin-top:8px}
+.about-page .about-orbits{stroke:var(--line);stroke-width:1.5}
+.about-page .about-connection-path{stroke:var(--about-accent);stroke-width:2;stroke-dasharray:5 7}
+.about-page .about-person>circle:first-child{fill:var(--white);stroke:var(--line);stroke-width:1.5}
+.about-page .about-person-head{fill:var(--about-soft);stroke:var(--about-ink);stroke-width:2}
+.about-page .about-person path{stroke:var(--about-ink);stroke-width:2.5;stroke-linecap:round}
+.about-page .about-center-halo{fill:var(--about-soft)}
+.about-page .about-center{fill:var(--navy)}
+.about-page .about-center-word{font-size:20px;font-weight:700;fill:var(--white);font-family:inherit;letter-spacing:-.03em}
+.about-page .about-diagram-label{font-size:17px;fill:var(--about-ink);font-weight:500;font-family:inherit}
+.about-page .about-orbit-dot{fill:var(--about-soft);stroke:var(--about-accent);stroke-width:1}
+.about-page .about-value-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-block:1px solid var(--line);padding:26px 0;gap:24px}
+.about-page .about-value-strip p{display:flex;align-items:center;gap:14px;margin:0;font-size:15px;font-weight:500;line-height:1.6}
+.about-page .about-value-strip svg{flex:0 0 23px;width:23px;height:23px;stroke:var(--about-accent);stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.about-page .about-section{padding:70px 0;scroll-margin-top:24px}
+.about-page .about-story-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:60px}
+.about-page .about-story-copy p:last-child{margin-bottom:0}
+.about-page .about-founder-section{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:56px;margin-top:46px;padding:32px;background:var(--white);border-radius:8px;align-items:start}
+.about-page .about-founder-copy{min-width:0}
+.about-page .about-founder-copy>h3{font-size:16px;color:var(--about-accent);margin-bottom:24px}
+.about-page .about-founder{display:flex;align-items:center;gap:16px;margin-bottom:22px}
+.about-page .about-avatar{display:grid;place-items:center;flex:0 0 56px;width:56px;height:56px;border-radius:50%;background:var(--light);color:var(--navy);font-size:21px;font-weight:600}
+.about-page .about-founder p{font-size:14px;color:var(--muted);margin:0}
+.about-page .about-founder-copy>p:last-child{margin-bottom:0}
+.about-page .about-founder-portrait{width:270px;max-width:100%;aspect-ratio:3/4;margin:0;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--light)}
+.about-page .about-founder-portrait img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 20%}
+.about-page .about-roles{border-top:1px solid var(--line)}
+.about-page .about-tabs{display:inline-flex;gap:4px;padding:5px;background:var(--light);border:1px solid var(--line);border-radius:8px;margin:0 0 30px;max-width:100%}
+.about-page .about-tabs button{font:inherit;font-size:16px;font-weight:500;border:0;background:transparent;color:var(--about-ink);padding:12px 20px;border-radius:5px;cursor:pointer;min-height:48px}
+.about-page .about-tabs button[aria-selected=true]{background:var(--navy);color:var(--white)}
+.about-page .about-tabs button:hover:not([aria-selected=true]){background:var(--white)}
+.about-page .about-role-panel{display:grid;grid-template-columns:1fr 1fr;gap:48px;padding:32px;background:var(--white);border-radius:8px;min-height:285px}
+.about-page .about-role-panel h3{font-size:26px;letter-spacing:-.03em}
+.about-page .about-role-panel>div>p:last-child{margin-bottom:0}
+.about-page .about-role-name{font-size:14px;color:var(--about-accent);margin-bottom:18px}
+.about-page .about-role-panel:not([hidden])+.about-role-panel:not([hidden]){margin-top:24px}
+.about-page .about-role-list{list-style:none;padding:0;margin:0;align-self:center}
+.about-page .about-role-list li{position:relative;padding:12px 0 12px 25px;border-bottom:1px solid var(--line)}
+.about-page .about-role-list li:last-child{border:0}
+.about-page .about-role-list li::before{content:'';position:absolute;left:0;top:23px;width:7px;height:7px;background:var(--about-accent);border-radius:50%}
+.about-page .about-process{border-top:1px solid var(--line)}
+.about-page .about-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;list-style:none;margin:36px 0 0;padding:0}
+.about-page .about-step-number{display:block;font-size:17px;line-height:1.2;font-weight:600;color:var(--about-accent);padding-top:22px;border-top:1px solid var(--line);margin-bottom:25px;font-variant-numeric:tabular-nums}
+.about-page .about-steps h3{font-size:20px;line-height:1.35;min-height:54px;margin-bottom:12px}
+.about-page .about-steps p{font-size:15px;margin-bottom:0}
+.about-page .about-faq{border-top:1px solid var(--line);display:grid;grid-template-columns:.85fr 1.3fr;gap:48px}
+.about-page .about-questions details{margin:0;border-top:1px solid var(--line);padding:0}
+.about-page .about-questions details:last-child{border-bottom:1px solid var(--line)}
+.about-page .about-questions summary{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:21px 0;font-size:17px;font-weight:500;color:var(--about-ink);list-style:none;cursor:pointer}
+.about-page .about-questions summary::-webkit-details-marker{display:none}
+.about-page .about-questions summary svg{width:21px;height:21px;flex:0 0 21px;stroke:var(--about-accent);stroke-width:1.6;fill:none}
+.about-page .about-questions details[open] .about-plus-vertical{display:none}
+.about-page .about-questions details>p{padding:0 30px 22px 0;margin-bottom:0}
+.about-page .about-cta{display:flex;align-items:center;justify-content:space-between;gap:40px;padding:40px;background:var(--navy);color:var(--white);border-radius:8px}
+.about-page .about-cta .about-kicker{color:var(--about-soft)}
+.about-page .about-cta h2{font-size:clamp(27px,2.6vw,34px);color:var(--white);max-width:32ch;margin-bottom:18px}
+.about-page .about-cta p:last-child{margin-bottom:0;color:var(--white)}
+.about-page .about-cta .btn{flex:0 0 auto;background:var(--about-soft);color:var(--navy)}
+.about-page .about-cta .btn:hover{background:var(--white)}
+.about-page .about-note{font-size:13px;color:var(--muted);margin:24px 0 0;max-width:85ch}
+.about-page :is(a,button,summary):focus-visible{outline:3px solid var(--about-accent);outline-offset:5px}
+@media(max-width:1000px){.about-page .about-hero{grid-template-columns:1fr 1fr}.about-page h1{font-size:40px}.about-page .about-hero .about-actions{gap:16px}.about-page .about-story-grid{gap:30px}.about-page .about-founder-section{gap:30px;grid-template-columns:minmax(0,1fr) 240px;padding:26px}.about-page .about-founder-portrait{width:240px}.about-page .about-steps{grid-template-columns:repeat(2,minmax(0,1fr));gap:32px}.about-page .about-steps h3{min-height:0}.about-page .about-faq{gap:30px}.about-page .about-cta{padding:32px;gap:28px;align-items:flex-start;flex-direction:column}}
+@media(max-width:900px){.about-page{padding:24px;border-radius:8px}.about-page .about-hero{grid-template-columns:1fr;padding:12px 0 32px;gap:24px}.about-page h1{font-size:clamp(34px,7vw,44px)}.about-page .about-lead{font-size:17px}.about-page .about-connection{width:100%;max-width:460px;justify-self:center}.about-page .about-value-strip{gap:16px}.about-page .about-value-strip p{font-size:14px;display:block}.about-page .about-value-strip svg{display:block;margin-bottom:12px}.about-page .about-value-strip br{display:none}.about-page .about-section{padding:44px 0}.about-page .about-story-grid,.about-page .about-role-panel,.about-page .about-faq{grid-template-columns:1fr;gap:24px}.about-page h2{font-size:29px}.about-page .about-founder-section{grid-template-columns:1fr;gap:24px;padding:24px;margin-top:30px}.about-page .about-founder-portrait{width:270px;justify-self:center}.about-page .about-role-panel{padding:24px;min-height:0}.about-page .about-role-panel h3{font-size:24px}.about-page .about-role-panel br{display:none}.about-page .about-tabs button{padding:12px 16px;font-size:15px}.about-page .about-steps{margin-top:28px;gap:24px}.about-page .about-faq{gap:8px}.about-page .about-cta{padding:28px}.about-page .about-cta h2{font-size:28px}.about-page .about-founder h4{font-size:20px}}
+@media(max-width:480px){.about-page{padding:22px 20px}.about-page h1{font-size:35px}.about-page .about-actions{align-items:flex-start;flex-direction:column;gap:18px}.about-page .about-hero{padding-top:8px;gap:28px}.about-page .about-value-strip{grid-template-columns:1fr;gap:18px;padding:24px 0}.about-page .about-value-strip p{display:flex;align-items:center;font-size:15px}.about-page .about-value-strip svg{margin:0}.about-page .about-steps{grid-template-columns:1fr;gap:26px}.about-page .about-step-number{margin-bottom:16px}.about-page .about-steps h3{font-size:21px}.about-page .about-tabs{display:flex;width:100%}.about-page .about-tabs button{flex:1;min-width:0;padding:11px 9px;font-size:14px}.about-page .about-role-panel{padding:22px 18px}.about-page .about-founder-section{padding:22px 18px}.about-page .about-founder{gap:12px;align-items:flex-start}.about-page .about-founder h4{font-size:19px}.about-page .about-founder p{font-size:14px}.about-page .about-cta{padding:26px 22px}.about-page .about-cta h2{font-size:27px}.about-page .about-questions summary{font-size:16px}}
+@media(prefers-reduced-motion:reduce){.about-page *{scroll-behavior:auto;transition:none}}
+
+.about-page .btn,.about-page .about-story-link{display:inline-flex;align-items:center;gap:12px}
+.about-page .about-arrow{width:18px;height:18px;flex:0 0 18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+@media(max-width:480px){.about-page .about-diagram-label{font-size:23px}.about-page .about-center-word{font-size:26px}}

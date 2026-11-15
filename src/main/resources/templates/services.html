@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: page(~{::main})}"><main class="discovery-page">
+<link rel="stylesheet" th:href="@{/css/discovery.css}">
+<header class="discovery-heading"><h1>Tìm chuyên gia</h1><p>Tìm người phù hợp và khám phá dịch vụ họ cung cấp.</p></header>
+<form class="discovery-filter" th:action="@{/trang/trangchu}" method="get" role="search">
+  <label for="discovery-q">Từ khóa<input id="discovery-q" type="search" name="q" maxlength="200" th:value="${discovery.filter.q}" placeholder="Tên chuyên gia, dịch vụ hoặc nội dung"></label>
+  <label for="discovery-field">Chuyên ngành<select id="discovery-field" name="linhVuc"><option value="">Tất cả chuyên ngành</option><option th:each="field:${discovery.fields}" th:value="${field}" th:text="${field}" th:selected="${field == discovery.filter.field}"></option></select></label>
+  <div class="discovery-filter-actions"><button class="btn" type="submit">Tìm kiếm</button><a class="filter-clear" th:href="@{/trang/trangchu}">Xóa bộ lọc</a></div>
+</form>
+<div class="discovery-jump"><a href="#chuyen-gia">Chuyên gia</a><a href="#dich-vu">Dịch vụ của chuyên gia</a></div>
+<section id="chuyen-gia" class="discovery-section" aria-labelledby="experts-title"><div class="discovery-section-heading"><h2 id="experts-title">Chuyên gia</h2><span th:text="${discovery.experts.total+' chuyên gia'}"></span></div>
+  <div class="discovery-grid"><th:block th:each="e:${discovery.experts.items}"><article th:replace="~{discovery-cards :: expert(${e})}"></article></th:block></div>
+  <div class="discovery-empty" th:if="${discovery.experts.items.isEmpty()}"><p>Chưa có chuyên gia phù hợp.</p><a th:href="@{/trang/trangchu}">Xóa bộ lọc</a></div>
+  <nav th:replace="~{discovery-cards :: pagination(${discovery.experts},'chuyên gia')}"></nav>
+</section>
+<section id="dich-vu" class="discovery-section" aria-labelledby="packages-title"><div class="discovery-section-heading"><h2 id="packages-title">Dịch vụ của chuyên gia</h2><span th:text="${discovery.services.total+' dịch vụ'}"></span></div>
+  <div class="discovery-grid"><th:block th:each="d:${discovery.services.items}"><article th:replace="~{discovery-cards :: service(${d})}"></article></th:block></div>
+  <div class="discovery-empty" th:if="${discovery.services.items.isEmpty()}"><p>Chưa có dịch vụ phù hợp.</p><a th:href="@{/trang/trangchu}">Xóa bộ lọc</a></div>
+  <nav th:replace="~{discovery-cards :: pagination(${discovery.services},'dịch vụ')}"></nav>
+</section>
+</main></html>

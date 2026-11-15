@@ -1,0 +1,6 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: page(~{::main})}"><main>
+<section class="auth-card"><p class="context-label">CHÀO MỪNG TRỞ LẠI</p><h1>Đăng nhập</h1><p>Tiếp tục công việc cùng khách hàng và chuyên gia.</p><div class="notice danger" th:if="${param.error}">Email hoặc mật khẩu chưa đúng, hoặc tài khoản đã bị khóa.</div><form th:action="@{/dang-nhap}" method="post"><label>Email<input name="email" type="email" required autocomplete="username"></label><label>Mật khẩu<input name="password" type="password" required autocomplete="current-password"></label><button class="btn full">Đăng nhập</button></form><p>Chưa có tài khoản? <a th:href="@{/dang-ky}">Đăng ký ngay</a></p></section>
+</main></html>
+
+

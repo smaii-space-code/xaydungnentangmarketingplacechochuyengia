@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: page(~{::main})}"><main>
+<section class="auth-card account-form"><p class="context-label">BẮT ĐẦU CÙNG SANG CONNECT</p><h1>Đăng ký khách hàng</h1>
+<p class="notice" th:if="${detailRegistration}">Đăng ký tài khoản để xem chi tiết chuyên gia và dịch vụ.</p>
+<form th:action="@{/dang-ky}" th:object="${form}" method="post">
+<div class="notice danger" th:if="${formError}" th:text="${formError}" role="alert"></div>
+<div class="notice danger" th:if="${error}" th:text="${error}" role="alert"></div>
+<label>Họ tên<input th:field="*{hoTen}" required maxlength="100" autocomplete="name"></label>
+<label>Email<input th:field="*{email}" type="email" required maxlength="254" autocomplete="email"></label>
+<label>Mật khẩu<input name="password" type="password" required minlength="8" autocomplete="new-password"></label>
+<label>Nhập lại mật khẩu<input name="passwordAgain" type="password" required minlength="8" autocomplete="new-password"></label>
+<p class="hint">Mật khẩu từ 8 ký tự, tối đa 72 byte UTF-8.</p>
+<label>Số điện thoại di động<input th:field="*{soDienThoai}" type="tel" required pattern="0[35789][0-9]{8}" maxlength="10" inputmode="tel" autocomplete="tel-national" aria-describedby="phone-hint"></label>
+<p class="hint" id="phone-hint">Số di động Việt Nam gồm 10 chữ số. Xác thực email không xác thực số điện thoại.</p>
+<label>Loại khách hàng<select th:field="*{loaiKhachHang}" data-customer-type><option value="CA_NHAN">Cá nhân</option><option value="TO_CHUC">Công ty, doanh nghiệp</option></select></label>
+<label data-organization>Tên công ty, doanh nghiệp<input th:field="*{tenToChuc}" maxlength="200" th:required="${form.loaiKhachHang == 'TO_CHUC'}" autocomplete="organization"></label>
+<p class="hint">Tài khoản khách hàng cần xác thực email trước khi đăng nhập. Mỗi tài khoản mới đăng ký theo một nhánh.</p>
+<button class="btn full">Đăng ký và nhận mã xác thực</button></form>
+<details><summary>Đã đăng ký nhưng chưa xác thực?</summary><form th:action="@{/xac-thuc-email/tiep-tuc}" method="post"><p class="hint">Nhập email và mật khẩu đã đăng ký để nhận mã mới trong phiên này. Thông tin tài khoản đã đăng ký được giữ nguyên.</p><label>Email đăng ký<input name="email" type="email" required maxlength="254" autocomplete="email"></label><label>Mật khẩu đã đăng ký<input name="password" type="password" required autocomplete="current-password"></label><button class="btn full">Tiếp tục xác thực email</button></form></details>
+<p><a th:href="@{/dang-ky}">← Chọn lại loại tài khoản</a></p><p>Đã có tài khoản? <a th:href="@{/dang-nhap}">Đăng nhập</a></p>
+</section>
+<script th:src="@{/js/account.js}" defer></script>
+</main></html>

@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: page(~{::main})}"><main class="proposal-area"><link rel="stylesheet" th:href="@{/css/proposals.css}">
+<section class="panel narrow"><h1 th:text="${accept ? 'Chấp thuận chuyên gia' : 'Từ chối đề xuất'}"></h1><p><strong th:text="${row.expertName}"></strong> · <span th:text="${row.requestTitle}"></span></p><p th:text="${'Giá đề xuất: '+@fmt.money(row.price)}"></p>
+<p th:if="${row.canDecide}" th:text="${accept ? 'Bạn xác nhận chấp thuận chuyên gia này và tiếp tục rà soát, lập hợp đồng? Bước này chưa tạo hoặc ký hợp đồng.' : 'Bạn xác nhận từ chối đề xuất này? Nội dung và lịch sử đề xuất vẫn được giữ lại.'}"></p>
+<p th:if="${!row.canDecide}">Đề xuất không còn chờ xử lý. Trạng thái hiện tại: <strong th:text="${row.label}"></strong>.</p>
+<form th:if="${row.canDecide}" th:action="${'/de-xuat/'+row.id+(accept ? '/chap-thuan' : '/tu-choi')}" method="post"><div class="actions proposal-actions"><button class="btn" th:text="${accept ? 'Xác nhận chấp thuận' : 'Xác nhận từ chối'}"></button><a th:href="@{/de-xuat/{id}(id=${row.id})}">Quay lại đề xuất</a></div></form>
+<a th:if="${!row.canDecide}" th:href="@{/de-xuat/{id}(id=${row.id})}">Xem trạng thái mới</a>
+</section></main></html>

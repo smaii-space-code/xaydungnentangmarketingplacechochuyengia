@@ -1,0 +1,17 @@
+/* Chỉ áp dụng trang cơ hội dự án, giữ kiểu thẻ và form hiện tại. */
+.project-board {min-width:0;overflow-wrap:anywhere}
+.project-board .project-filter-fields {display:grid;grid-template-columns:2fr 1.4fr 1fr 1fr;gap:18px;min-width:0}
+.project-board .project-filter label {min-width:0;margin-bottom:0}
+.project-board .project-filter input,.project-board .project-filter select {width:100%;min-width:0;max-width:100%;box-sizing:border-box}
+.project-board .project-filter-actions {margin-top:20px;align-items:center;gap:20px;flex-wrap:wrap}
+.project-board .project-filter .notice {overflow-wrap:anywhere}
+.project-board .project-badges {display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.project-board .project-meta {margin:18px 0;min-width:0}
+.project-board .project-meta>div {display:grid;grid-template-columns:105px minmax(0,1fr);gap:12px;margin:7px 0}
+.project-board .project-meta dt {color:var(--muted);font-size:14px}
+.project-board .project-meta dd {margin:0;font-size:14px;overflow-wrap:anywhere}
+.project-board .card {display:flex;flex-direction:column;min-width:0}
+.project-board .card-bottom {margin-top:auto;gap:12px;flex-wrap:wrap}
+.project-board .project-pagination {display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;margin-top:30px}
+@media(max-width:1000px){.project-board .project-filter-fields{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.project-board .project-filter-fields{grid-template-columns:minmax(0,1fr)}.project-board .project-pagination{gap:14px}}

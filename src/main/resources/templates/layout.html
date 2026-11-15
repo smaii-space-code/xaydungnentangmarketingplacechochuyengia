@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:fragment="page(content)">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Bạn mang ý tưởng, Sang Connect kết nối chuyên gia. Tìm chuyên gia phù hợp, hợp tác theo từng mốc và quản lý giao dịch trên cùng một nền tảng."><title>Sang Connect · Dịch vụ chuyên gia</title><link rel="stylesheet" th:href="@{/css/app.css}"><link rel="stylesheet" th:href="@{/css/connect.css}"><link rel="stylesheet" th:href="@{/css/account.css}"><link rel="stylesheet" th:href="@{/css/about.css}"><link rel="stylesheet" th:href="@{/css/projects.css}"></head>
+<body><a class="skip-link" href="#main-content">Đến nội dung chính</a>
+<header class="header"><a class="brand" th:href="@{/}" aria-label="Sang Connect — Trang chủ">SANG CONNECT</a><nav class="site-nav" aria-label="Điều hướng chính">
+<a th:href="@{/}" th:attr="aria-current=${currentPath == '/' ? 'page' : null}">Trang chủ</a>
+<a th:if="${me == null or me.admin or me.khach}" th:href="@{/trang/trangchu}" th:attr="aria-current=${currentPath == '/trang/trangchu' or #strings.startsWith(currentPath, '/dich-vu/') ? 'page' : null}">Tìm chuyên gia</a>
+<a th:if="${me != null and me.findProjects}" th:href="@{/tim-du-an}" th:attr="aria-current=${currentPath == '/tim-du-an' or projectDetail == true ? 'page' : null}">Tìm dự án</a>
+<a th:href="@{/ve-sang-connect}" th:attr="aria-current=${currentPath == '/ve-sang-connect' ? 'page' : null}">Về Sang Connect</a>
+<a th:if="${me != null and (me.admin or me.khach)}" th:href="@{/yeu-cau}" th:attr="aria-current=${#strings.startsWith(currentPath, '/yeu-cau') and projectDetail != true ? 'page' : null}" th:text="${me.admin ? 'Yêu cầu công việc' : 'Yêu cầu của tôi'}"></a>
+<a th:if="${me != null}" th:href="@{/bang-dieu-khien}" th:attr="aria-current=${currentPath == '/bang-dieu-khien' ? 'page' : null}">Không gian làm việc</a>
+<a th:if="${me != null and me.admin}" th:href="@{/quan-tri}" th:attr="aria-current=${#strings.startsWith(currentPath, '/quan-tri') ? 'page' : null}">Quản trị</a>
+</nav><div class="account"><a th:if="${me == null}" th:href="@{/dang-nhap}">Đăng nhập</a><a class="btn small" th:if="${me == null}" th:href="@{/dang-ky}">Đăng ký</a><a th:if="${me != null}" th:href="@{/ho-so}" class="account-greeting" th:title="${'Xin chào: ' + me.hoTen}" th:text="${'Xin chào: ' + me.hoTen}"></a><form th:if="${me != null}" th:action="@{/dang-xuat}" method="post"><button class="link" type="submit">Đăng xuất</button></form></div></header>
+<div class="shell" id="main-content" tabindex="-1"><div class="notice success" th:if="${success != null and accountPage != true}" th:text="${success}" role="status"></div><div class="notice danger" th:if="${error != null and accountPage != true}" th:text="${error}" role="alert"></div><div th:replace="${content}"></div></div>
+<footer class="connect-footer"><div class="footer-top"><p>Ý tưởng tiếp theo<br>bắt đầu từ một kết nối.</p><a class="btn" th:href="@{/dang-ky}">Đăng ký Sang Connect ↗</a></div><strong class="footer-brand">SANG CONNECT</strong><div class="footer-bottom"><span>Bạn mang ý tưởng, Sang Connect kết nối chuyên gia.</span><span th:if="${currentPath != '/ve-sang-connect'}">MAI PHƯỚC SANG · 1250080159 · 12_CNPM2</span></div></footer>
+</body></html>
+
+
+

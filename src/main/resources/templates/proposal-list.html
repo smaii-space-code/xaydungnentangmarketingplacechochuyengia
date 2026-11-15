@@ -1,0 +1,5 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: page(~{::main})}"><main><link rel="stylesheet" th:href="@{/css/proposals.css}">
+<div class="page-head"><div><h1 th:text="${received ? 'Đề xuất nhận được' : 'Đề xuất đã gửi'}"></h1><p th:text="${'Tổng '+rows.size()+' đề xuất, gồm cả đề xuất đã xử lý.'}"></p></div><a th:href="@{/bang-dieu-khien}">Về Không gian làm việc</a></div>
+<section class="panel"><div th:replace="~{proposals :: list(${rows},${received})}"></div></section>
+</main></html>

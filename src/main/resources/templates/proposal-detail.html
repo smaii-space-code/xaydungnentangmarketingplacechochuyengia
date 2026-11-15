@@ -1,0 +1,5 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: page(~{::main})}"><main><link rel="stylesheet" th:href="@{/css/proposals.css}">
+<div class="page-head"><h1>Chi tiết đề xuất</h1><a th:href="@{/yeu-cau/{id}(id=${row.requestId})}">Về yêu cầu</a></div>
+<section class="panel"><div th:replace="~{proposals :: list(${rows},${me.id == row.customerId})}"></div></section>
+</main></html>

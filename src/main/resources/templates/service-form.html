@@ -1,0 +1,6 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: page(~{::main})}"><main>
+<h1 th:text="${service==null?'Đăng dịch vụ mới':'Chỉnh sửa dịch vụ'}"></h1><section class="panel narrow"><form th:action="@{/dich-vu/luu}" method="post"><input th:if="${service!=null}" type="hidden" name="id" th:value="${service.maDichVu}"><label>Tên dịch vụ<input name="ten" th:value="${service==null?'':service.tenDichVu}" required minlength="3" maxlength="255"></label><label>Lĩnh vực<input name="linhVuc" th:value="${service==null?'':service.linhVuc}" required maxlength="100"></label><label>Mô tả<textarea name="moTa" required minlength="10" maxlength="10000" th:text="${service==null?'':service.moTa}"></textarea></label><label>Giá tham khảo (đồng)<input name="gia" type="number" min="1" step="1" required th:value="${service==null?'':service.giaThamKhao}"></label><p class="hint">Lưu dưới dạng bản nháp. Sau khi rà soát và xác nhận trách nhiệm nội dung, gửi admin duyệt trong Không gian làm việc.</p><button class="btn">Lưu bản nháp</button></form></section>
+</main></html>
+
+

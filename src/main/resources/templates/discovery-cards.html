@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"><body>
+<article class="discovery-card expert-card" th:fragment="expert(e)">
+  <div class="person-heading"><a class="person-avatar" th:href="@{/chuyen-gia/{id}(id=${e.id})}" th:aria-label="${'Xem hồ sơ '+e.name}" th:text="${e.initials}"></a><div><h3><a th:href="@{/chuyen-gia/{id}(id=${e.id})}" th:text="${e.name}"></a></h3><p class="person-fields" th:if="${!e.fields.isEmpty()}" th:text="${#strings.listJoin(e.fields, ' · ')}"></p></div></div>
+  <p class="discovery-summary" th:if="${e.introduction != null and !#strings.isEmpty(e.introduction)}" th:text="${e.introduction}"></p>
+  <p class="discovery-summary discovery-muted" th:if="${e.introduction == null or #strings.isEmpty(e.introduction)}">Chuyên gia chưa bổ sung giới thiệu.</p>
+  <div class="person-proof"><span th:if="${e.reviewCount > 0}" th:text="${#numbers.formatDecimal(e.average,1,1)+' / 5 · '+e.reviewCount+' đánh giá'}"></span><span th:if="${e.reviewCount == 0}">Chưa có đánh giá</span><span th:if="${e.completed > 0}" th:text="${e.completed+' công việc hoàn thành'}"></span></div>
+  <a class="discovery-button" th:href="@{/chuyen-gia/{id}(id=${e.id})}">Xem chi tiết<span class="sr-only" th:text="${' chuyên gia '+e.name}"></span></a>
+</article>
+<article class="discovery-card package-card" th:fragment="service(d)">
+  <p class="package-field" th:text="${d.field}"></p><h3><a th:href="@{/dich-vu/xem/{id}(id=${d.id})}" th:text="${d.title}"></a></h3><p class="discovery-summary" th:text="${d.summary}"></p>
+  <a class="package-owner" th:href="@{/chuyen-gia/{id}(id=${d.ownerId})}" th:text="${d.ownerName}"></a>
+  <div class="package-bottom"><div><span>Giá dịch vụ</span><strong th:text="${@fmt.money(d.price)}"></strong></div><a class="discovery-button" th:href="@{/dich-vu/xem/{id}(id=${d.id})}">Xem chi tiết<span class="sr-only" th:text="${' dịch vụ '+d.title}"></span></a></div>
+</article>
+<nav class="discovery-pagination" th:fragment="pagination(page,label)" th:if="${page.total > 0}" th:aria-label="${'Phân trang '+label}"><span th:text="${page.total+' '+label+' · Trang '+page.number+' / '+page.pages}"></span><div><a class="discovery-button" th:if="${page.previous != null}" th:href="${page.previous}">Trước</a><a class="discovery-button" th:if="${page.next != null}" th:href="${page.next}">Sau</a></div></nav>
+<div class="person-heading" th:fragment="identity(e)"><a class="person-avatar person-avatar-large" th:href="@{/chuyen-gia/{id}(id=${e.id})}" th:aria-label="${'Xem hồ sơ '+e.name}" th:text="${e.initials}"></a><div><h2><a th:href="@{/chuyen-gia/{id}(id=${e.id})}" th:text="${e.name}"></a></h2><p class="person-fields" th:if="${!e.fields.isEmpty()}" th:text="${#strings.listJoin(e.fields, ' · ')}"></p></div></div>
+</body></html>

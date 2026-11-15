@@ -1,0 +1,24 @@
+/* Chỉ nhãn, nội dung và thao tác đề xuất. */
+.proposal-area {min-width:0;overflow-wrap:anywhere}
+.proposal-area .proposal-state {display:inline-block;max-width:100%;padding:5px 11px;border-radius:5px;font-size:14px;font-weight:600;line-height:1.5;white-space:normal;overflow-wrap:anywhere;background:#edf1ee;color:#34483d}
+.proposal-area .proposal-state--sent,.proposal-area .proposal-state--accepted {background:#e7f3e9;color:#155b32}
+.proposal-area .proposal-state--rejected {background:#fbe9eb;color:#982536}
+.proposal-area .proposal-actions {display:flex;align-items:center;gap:12px 18px;flex-wrap:wrap;margin-top:18px}
+.proposal-area .proposal-actions form {margin:0;max-width:100%}
+.proposal-area .proposal-actions .btn {max-width:100%;white-space:normal;text-align:center}
+.proposal-area .proposal-reject {background:#fbe9eb;color:#982536;border:1px solid #edc3c9}
+.proposal-area .proposal-reject:hover {background:#f4d7dd}
+.proposal-area .row-item {flex-wrap:wrap;align-items:flex-start}
+.proposal-area .row-item>div {min-width:0;flex:1 1 220px}
+.proposal-area h3 {margin:0 0 8px}
+.proposal-area .proposal-summary {margin:20px 0}
+.proposal-area .proposal-summary>div {display:grid;grid-template-columns:minmax(120px,1fr) minmax(0,2fr);gap:16px;margin:10px 0}
+.proposal-area .proposal-summary dt {color:var(--muted)}
+.proposal-area .proposal-summary dd {margin:0;overflow-wrap:anywhere}
+@media(max-width:650px){.proposal-area .proposal-summary>div{grid-template-columns:minmax(0,1fr);gap:4px}.proposal-area .proposal-actions{align-items:flex-start}}
+.proposal-count strong {display:block}
+.proposal-count>a {display:inline-block;margin-top:8px}
+.proposal-area .table-wrap table {min-width:760px}
+.proposal-area .proposal-price,.proposal-area .proposal-date {white-space:nowrap}
+.proposal-area .proposal-scroll-note {display:none}
+@media(max-width:650px){.proposal-area .proposal-scroll-note{display:block}}

@@ -1,0 +1,6 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: page(~{::main})}"><main>
+<h1 th:text="${service==null?'Đăng yêu cầu công việc':'Yêu cầu từ dịch vụ có sẵn'}"></h1><section class="panel narrow"><p th:if="${service!=null}" th:text="${'Dịch vụ: '+service.tenDichVu}"></p><form th:action="@{/yeu-cau}" method="post"><input th:if="${service!=null}" type="hidden" name="dichVu" th:value="${service.maDichVu}"><label>Tiêu đề<input name="tieuDe" required minlength="5" maxlength="255" th:value="${service==null?'':'Yêu cầu '+service.tenDichVu}"></label><label>Mô tả nhu cầu và kết quả mong muốn<textarea name="moTa" required minlength="10" maxlength="10000"></textarea></label><label>Ngân sách dự kiến (đồng)<input name="nganSach" type="number" min="1" step="1" required th:value="${service==null?'':service.giaThamKhao}"></label><label>Hạn dự kiến<input name="han" type="date"></label><button class="btn">Đăng yêu cầu</button></form></section>
+</main></html>
+
+

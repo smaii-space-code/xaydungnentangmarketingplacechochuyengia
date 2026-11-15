@@ -1,0 +1,23 @@
+package vn.biz04;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.*;
+import vn.biz04.service.*;
+import java.time.*;
+import java.math.*;
+import java.util.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+class MilestonePlanRulesTest {
+    MilestonePlanForm form(){var form=new MilestonePlanForm();for(int i=0;i<2;i++){var item=new MilestonePlanForm.Item();item.setTitle("Mốc kiểm thử "+i);item.setWork("Công việc kiểm thử cụ thể");item.setDeliverable("Sản phẩm bàn giao rõ ràng");item.setCriteria("Kịch bản nghiệm thu chạy đúng");item.setAmount("125");item.setDue(i==0?"15":"40");form.getItems().add(item);}return form;}
+    @Test void fortnightHasPartialFinalPeriodAndAtMostTen(){assertEquals(List.of(15,30,40),MilestonePlanRules.fortnight(40));assertEquals(List.of(1),MilestonePlanRules.fortnight(1));assertEquals(10,MilestonePlanRules.fortnight(150).size());assertThrows(BusinessException.class,()->MilestonePlanRules.fortnight(151));}
+    @ParameterizedTest @CsvSource({"2024-01-31,1,2024-02-29","2023-01-31,1,2023-02-28","2024-01-31,2,2024-03-31","2024-02-29,12,2025-02-28","2026-08-31,1,2026-09-30"})
+    void calendarMonthRulesUseOriginalStartAndClampAtMonthEnd(String start,int offset,String expected){assertEquals(LocalDate.parse(expected),MilestonePlanRules.relativeDate(LocalDate.parse(start),"MONTH",offset));}
+    @Test void monthlyPlanUsesCalendarAndExactProjectEndWithoutStartDate(){var f=form();f.setMode("MONTH");f.getItems().get(0).setDue("1");f.getItems().get(1).setDue("2");var t=MilestonePlanRules.validate(f,new BigDecimal("250"),40,false);assertEquals(MilestonePlanRules.MONTH_RULE,t.deadlineRule());assertEquals(List.of(1,2),MilestonePlanRules.monthly(40));for(String date:List.of("2024-01-31","2023-01-31","2024-02-29","2026-08-31")){var start=LocalDate.parse(date);assertEquals(start.plusMonths(1),MilestonePlanRules.resolve(start,t.items().get(0),40,false,t.deadlineRule()));assertEquals(start.plusDays(40),MilestonePlanRules.resolve(start,t.items().get(1),40,true,t.deadlineRule()));}assertThrows(BusinessException.class,()->MilestonePlanRules.relativeDate(null,"MONTH",1));}
+    @Test void feeIsRoundedPerItemAndNotChargedAgainOnTotal(){var terms=MilestonePlanRules.validate(form(),new BigDecimal("250"),40,false);assertEquals(new BigDecimal("26"),terms.fee());assertEquals(new BigDecimal("224"),terms.net());assertEquals(new BigDecimal("13"),terms.items().get(0).fee());assertEquals("DEDUCT_EXPERT_ALLOCATION_HALF_UP",terms.feeRule());assertEquals(new BigDecimal("0.1000"),terms.rate());}
+    @ParameterizedTest @ValueSource(strings={"0","-1","1.5","abc","1000000000001"}) void moneyMustBePositiveWholeVndAndReconcile(String value){var f=form();f.getItems().get(0).setAmount(value);assertThrows(BusinessException.class,()->MilestonePlanRules.validate(f,new BigDecimal("250"),40,false));}
+    @ParameterizedTest @ValueSource(strings={"0","41","1.5","-1"}) void deadlinesCannotExceedAgreedDuration(String value){var f=form();f.getItems().get(1).setDue(value);assertThrows(BusinessException.class,()->MilestonePlanRules.validate(f,new BigDecimal("250"),40,false));}
+    @Test void deadlinesCannotDecreaseAndRevisionsAreNonnegativeIntegers(){var f=form();f.getItems().get(1).setDue("14");assertThrows(BusinessException.class,()->MilestonePlanRules.validate(f,new BigDecimal("250"),40,false));f.getItems().get(1).setDue("40");for(String value:List.of("-1","1.5","2147483648")){f.getItems().get(0).setRevisions(value);assertThrows(BusinessException.class,()->MilestonePlanRules.validate(f,new BigDecimal("250"),40,false));}}
+    @Test void oneToTenItemsRequiredAndStableKeysCannotDuplicate(){var f=form();f.getItems().get(1).setStableKey(f.getItems().get(0).getStableKey());assertThrows(BusinessException.class,()->MilestonePlanRules.validate(f,new BigDecimal("250"),40,false));f.getItems().clear();assertThrows(BusinessException.class,()->MilestonePlanRules.validate(f,new BigDecimal("250"),40,false));for(int i=0;i<11;i++)f.getItems().add(new MilestonePlanForm.Item());assertThrows(BusinessException.class,()->MilestonePlanRules.validate(f,new BigDecimal("250"),40,false));}
+    @Test void revisionNeedsReasonAndRequiredContentHasBounds(){var f=form();assertThrows(BusinessException.class,()->MilestonePlanRules.validate(f,new BigDecimal("250"),40,true));f.setReason("Bổ sung sản phẩm bàn giao.");f.getItems().get(0).setCriteria(" ");assertThrows(BusinessException.class,()->MilestonePlanRules.validate(f,new BigDecimal("250"),40,true));f.getItems().get(0).setCriteria("x".repeat(10001));assertThrows(BusinessException.class,()->MilestonePlanRules.validate(f,new BigDecimal("250"),40,true));}
+}

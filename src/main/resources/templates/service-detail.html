@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: page(~{::main})}"><main class="discovery-page service-page" th:with="d=${detail.service},e=${detail.expert}">
+<link rel="stylesheet" th:href="@{/css/discovery.css}">
+<a class="discovery-back" th:href="@{/trang/trangchu#dich-vu}">← Tất cả dịch vụ</a>
+<div class="discovery-detail-grid"><section class="discovery-service-content"><p class="package-field" th:text="${d.field}"></p><h1 th:text="${d.title}"></h1><div class="service-package-price"><span>Giá dịch vụ</span><strong th:text="${@fmt.money(d.price)}"></strong></div><h2>Thông tin dịch vụ</h2><p class="discovery-full-text" th:text="${d.description}"></p>
+  <div class="discovery-request" th:if="${canRequest}"><p>Giá và kế hoạch mốc cuối cùng được thống nhất trong hợp đồng.</p><a class="btn" th:href="@{/yeu-cau/moi(dichVu=${d.id})}">Tạo yêu cầu từ dịch vụ</a><p class="hint">Yêu cầu được gửi đến chuyên gia đăng dịch vụ. Chuyên gia gửi đề xuất trước khi hai bên lập hợp đồng.</p></div>
+  <p th:if="${canRequest}"><a class="discovery-button" th:href="@{/de-nghi-thue/gui/chuyen-gia/{id}(id=${d.ownerId},dichVu=${d.id})}">Gửi đề nghị thuê</a></p>
+</section><aside class="discovery-provider" aria-label="Chuyên gia cung cấp dịch vụ">
+  <div th:replace="~{discovery-cards :: identity(${e})}"></div>
+  <p class="discovery-summary" th:if="${e.introduction != null and !#strings.isEmpty(e.introduction)}" th:text="${e.introduction}"></p><p class="discovery-muted" th:if="${e.introduction == null or #strings.isEmpty(e.introduction)}">Chuyên gia chưa bổ sung giới thiệu.</p>
+  <div class="person-proof"><span th:if="${e.reviewCount > 0}" th:text="${#numbers.formatDecimal(e.average,1,1)+' / 5 · '+e.reviewCount+' đánh giá'}"></span><span th:if="${e.reviewCount == 0}">Chưa có đánh giá</span><span th:if="${e.completed > 0}" th:text="${e.completed+' công việc hoàn thành'}"></span></div>
+  <a class="discovery-button" th:href="@{/chuyen-gia/{id}(id=${e.id})}">Xem hồ sơ</a>
+  <div class="provider-services"><h3>Dịch vụ khác của chuyên gia</h3><ul><li th:each="other:${detail.others}"><a th:href="@{/dich-vu/xem/{id}(id=${other.id})}" th:text="${other.title}"></a><strong th:text="${@fmt.money(other.price)}"></strong></li></ul><p class="discovery-muted" th:if="${detail.others.isEmpty()}">Chuyên gia chưa có dịch vụ công khai khác.</p><a class="provider-all" th:href="@{/chuyen-gia/{id}(id=${e.id})}+'#dich-vu'">Xem tất cả dịch vụ<span th:if="${detail.otherCount > detail.others.size()}" th:text="${' ('+(detail.otherCount+1)+')'}"></span></a></div>
+</aside></div>
+</main></html>

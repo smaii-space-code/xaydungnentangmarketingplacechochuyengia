@@ -1,0 +1,14 @@
+/* Chỉ áp dụng cho các form tài khoản và lời chào hiện có. */
+.account-form {min-width:0;overflow-wrap:anywhere}
+.account-form form,.account-form label,.account-form details {min-width:0;max-width:100%}
+.account-form input,.account-form textarea,.account-form select {box-sizing:border-box;max-width:100%;min-width:0}
+.account-form .notice {white-space:normal;overflow-wrap:anywhere}
+.account-form [hidden] {display:none!important}
+.account-form details {margin:1rem 0}
+.account-form summary {cursor:pointer;color:#176b43;font-weight:600;margin-bottom:.75rem}
+.account-form .email-change-form {margin-top:2rem;padding-top:1.5rem;border-top:1px solid #dde5df}
+.account-form .email-change-form h2 {font-size:1.25rem;margin-bottom:1rem}
+.account .account-greeting {display:block;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.account form {flex-shrink:0}
+@media(max-width:768px){.account .account-greeting{max-width:170px}}
+@media(max-width:420px){.account .account-greeting{max-width:145px}.account-form .btn{max-width:100%;white-space:normal}}

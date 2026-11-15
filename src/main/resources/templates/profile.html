@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: page(~{::main})}"><main>
+<div class="page-head"><div><p class="context-label">TÀI KHOẢN</p><h1>Hồ sơ của tôi</h1></div></div>
+<section class="panel narrow account-form"><form th:action="@{/ho-so}" th:object="${form}" method="post">
+<div class="notice success" th:if="${success}" th:text="${success}" role="status"></div>
+<div class="notice danger" th:if="${error}" th:text="${error}" role="alert"></div>
+<div class="notice danger" th:if="${formError}" th:text="${formError}" role="alert"></div>
+<label>Họ tên<input th:field="*{hoTen}" required maxlength="100" autocomplete="name"></label>
+<label>Email hiện tại<input th:value="${form.email}" disabled></label>
+<p class="hint" th:text="${emailState == 'DA_XAC_THUC' ? 'Email đã được xác thực.' : (emailState == 'DEMO' ? 'Tài khoản trình diễn; email chưa được xác thực.' : 'Tài khoản cũ đang hoạt động theo cơ chế chuyển tiếp; email chưa được xác thực. Đổi email bên dưới để xác thực địa chỉ mới. Một số ngày tạo là thời điểm chuyển tiếp dữ liệu.')}" ></p>
+<label>Số điện thoại di động<input th:field="*{soDienThoai}" type="tel" pattern="0[35789][0-9]{8}" maxlength="10" inputmode="tel" autocomplete="tel-national"></label>
+<p class="hint">Di động Việt Nam 10 chữ số; chưa xác thực quyền sở hữu số điện thoại. Hồ sơ cũ có thể để trống.</p>
+<label>Loại khách hàng<select th:field="*{loaiKhachHang}" data-customer-type><option value="CA_NHAN">Cá nhân</option><option value="TO_CHUC">Công ty, doanh nghiệp</option></select></label>
+<label data-organization>Tên công ty, doanh nghiệp<input th:field="*{tenToChuc}" maxlength="200" th:required="${form.loaiKhachHang == 'TO_CHUC'}" autocomplete="organization"></label>
+<label>Địa chỉ (Tùy chọn)<input th:field="*{diaChi}" maxlength="250" autocomplete="street-address"></label>
+<label>Giới thiệu nhu cầu thuê chuyên gia (Tùy chọn)<textarea th:field="*{gioiThieu}" maxlength="2000" rows="4"></textarea></label>
+<p th:if="${!#strings.isEmpty(cccdMasked)}" th:text="${'CCCD đã lưu: ' + cccdMasked}"></p>
+<label th:if="${#strings.isEmpty(cccdMasked)}">Số CCCD (Tùy chọn)<input name="soCccdMoi" type="text" inputmode="numeric" pattern="[0-9]{12}" maxlength="12" autocomplete="off"></label>
+<details th:if="${!#strings.isEmpty(cccdMasked)}" data-cccd-editor><summary>Cập nhật số CCCD mới</summary><label>Số CCCD mới<input name="soCccdMoi" type="text" inputmode="numeric" pattern="[0-9]{12}" maxlength="12" autocomplete="off"></label><button type="button" class="btn ghost small" data-cancel-cccd>Hủy cập nhật CCCD</button></details>
+<p class="hint">CCCD của chủ tài khoản/người đại diện gồm 12 chữ số. Kiểm tra định dạng không xác minh danh tính. Để trống ô mới sẽ giữ nguyên số đã lưu.</p>
+<p class="hint">Vai trò hiện tại: <span th:if="${form.khach}">Khách hàng </span><span th:if="${form.chuyenGia}">Chuyên gia</span>. Vai trò không thay đổi qua biểu mẫu hồ sơ.</p>
+<p class="hint">Ngày tạo: <span th:text="${@fmt.offsetDate(created)}"></span><br>Cập nhật gần nhất: <span th:text="${@fmt.offsetDate(updated)}"></span> (giờ Việt Nam)</p>
+<button class="btn">Lưu hồ sơ</button></form>
+<form th:action="@{/ho-so/doi-email}" method="post" class="email-change-form"><h2>Đổi email</h2>
+<div class="notice danger" th:if="${emailError}" th:text="${emailError}" role="alert"></div>
+<label>Email mới<input name="emailMoi" type="email" required maxlength="254" th:value="${emailMoi}" autocomplete="email"></label>
+<label>Mật khẩu hiện tại<input name="matKhauHienTai" type="password" required autocomplete="current-password"></label>
+<p class="hint">Email hiện tại vẫn hoạt động đến khi bạn xác thực email mới. Sau khi xác thực, hãy đăng nhập lại bằng email mới.</p>
+<button class="btn">Gửi mã đến email mới</button></form></section>
+<script th:src="@{/js/account.js}" defer></script>
+</main></html>
+

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: page(~{::main})}"><main class="project-board">
+<div class="page-head"><div><h1>Tìm dự án</h1><p>Khám phá yêu cầu từ khách hàng và tìm cơ hội phù hợp với chuyên môn của bạn.</p></div></div>
+<form class="panel project-filter" th:action="@{/tim-du-an}" method="get">
+<div class="notice danger" th:if="${filterError}" th:text="${filterError}" role="alert"></div>
+<div class="project-filter-fields">
+<label>Từ khóa<input name="q" type="search" maxlength="200" th:value="${filters.q}" placeholder="Tiêu đề hoặc mô tả yêu cầu"></label>
+<label>Lĩnh vực<select name="linhVuc"><option value="">Tất cả lĩnh vực</option><option value="_NONE" th:selected="${filters.field == '_NONE'}">Chưa cung cấp lĩnh vực</option><option th:each="field:${result.fields}" th:value="${field}" th:text="${field}" th:selected="${filters.field == field}"></option><option th:if="${!#strings.isEmpty(filters.field) and filters.field != '_NONE' and !result.fields.contains(filters.field)}" th:value="${filters.field}" th:text="${filters.field}" selected></option></select></label>
+<label>Ngân sách từ (đồng)<input name="tu" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="13" th:value="${filters.min}" placeholder="Không giới hạn"></label>
+<label>Ngân sách đến (đồng)<input name="den" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="13" th:value="${filters.max}" placeholder="Không giới hạn"></label>
+</div><div class="actions project-filter-actions"><button class="btn">Tìm dự án</button><a th:href="@{/tim-du-an}">Xóa bộ lọc</a></div></form>
+<p th:if="${filterError == null}" class="hint" th:text="${result.total + ' yêu cầu phù hợp · Mới nhất trước'}"></p>
+<div class="cards"><article class="card" th:each="project:${result.items}">
+<div class="project-badges"><span class="badge">Đang nhận đề xuất</span><span class="badge" th:if="${project.proposed}">Đã gửi đề xuất</span></div>
+<h2><a th:href="@{/yeu-cau/{id}(id=${project.id})}" th:text="${project.title}"></a></h2><p class="clamp" th:text="${project.description}"></p>
+<dl class="project-meta"><div><dt>Lĩnh vực</dt><dd th:text="${project.field == null ? 'Chưa cung cấp' : project.field}"></dd></div><div><dt>Khách hàng</dt><dd th:text="${project.customer}"></dd></div><div th:if="${project.due != null}"><dt>Hạn dự kiến</dt><dd th:text="${@fmt.date(project.due)}"></dd></div><div><dt>Ngày đăng</dt><dd th:text="${project.posted == null ? 'Chưa cung cấp' : @fmt.date(project.posted)}"></dd></div></dl>
+<div class="card-bottom"><strong th:text="${@fmt.money(project.budget)}"></strong><a th:href="@{/yeu-cau/{id}(id=${project.id})}">Xem chi tiết</a></div>
+</article></div>
+<div class="panel project-empty" th:if="${result.items.isEmpty() and filterError == null}"><h2>Chưa có dự án phù hợp</h2><p>Không có yêu cầu đang nhận đề xuất phù hợp với điều kiện tìm kiếm của bạn.</p><a class="btn secondary" th:href="@{/tim-du-an}">Xóa bộ lọc</a></div>
+<nav class="project-pagination" aria-label="Phân trang dự án" th:if="${result.pages > 1}"><a class="btn secondary" th:if="${result.previous != null}" th:href="${result.previous}">Trang trước</a><span th:text="${'Trang '+result.number+' / '+result.pages}" aria-live="polite"></span><a class="btn secondary" th:if="${result.next != null}" th:href="${result.next}">Trang sau</a></nav>
+</main></html>
+

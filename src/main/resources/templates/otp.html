@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: page(~{::main})}"><main>
+<section class="auth-card account-form"><p class="context-label">SANG CONNECT</p><h1>Xác thực email</h1>
+<form th:action="${change ? '/ho-so/xac-thuc-email' : '/xac-thuc-email'}" method="post">
+<div class="notice success" th:if="${success}" th:text="${success}" role="status"></div>
+<div class="notice danger" th:if="${error}" th:text="${error}" role="alert"></div>
+<p>Email nhận mã: <strong th:text="${challenge.email}"></strong></p>
+<label>Mã xác thực 6 chữ số<input name="code" type="text" required inputmode="numeric" pattern="[0-9]{6}" minlength="6" maxlength="6" autocomplete="one-time-code" autofocus></label>
+<p class="hint">Thời gian còn lại: <span data-otp-countdown th:attr="data-remaining-seconds=${challenge.remainingSeconds}">5 phút</span>. Hệ thống kiểm tra hạn dùng khi xác thực.</p>
+<button class="btn full">Xác thực</button></form>
+<form th:action="${change ? '/ho-so/xac-thuc-email/gui-lai' : '/xac-thuc-email/gui-lai'}" method="post"><p class="hint">Mỗi lần gửi cách nhau ít nhất 60 giây. Mã trước đó sẽ bị hủy.</p><button class="btn ghost full">Gửi lại mã</button></form>
+<details th:if="${!change}"><summary>Sửa email đang chờ xác thực</summary><form th:action="@{/xac-thuc-email/gui-lai}" method="post"><label>Email mới<input name="emailMoi" th:value="${emailMoi}" type="email" required maxlength="254" autocomplete="email"></label><button class="btn full">Sửa email và gửi mã mới</button></form></details>
+<p class="hint">OTP chỉ xác minh quyền truy cập email, không phải xác minh điện thoại, CCCD hoặc xác thực hai yếu tố.</p>
+<a th:if="${change}" th:href="@{/ho-so}">Quay lại hồ sơ</a>
+</section><script th:src="@{/js/account.js}" defer></script>
+</main></html>

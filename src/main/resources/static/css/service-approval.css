@@ -1,0 +1,7 @@
+/* Scoped to service submission and moderation controls. */
+.service-approval-row{flex-wrap:wrap;align-items:flex-start}
+.service-approval-row>div{min-width:0;flex:1 1 240px}
+.service-approval-row .actions{min-width:0;flex-wrap:wrap;align-items:flex-start}
+.service-approval-row .actions form{flex:1 1 240px;min-width:0;max-width:100%}
+.service-approval-row .check input{flex:0 0 auto}
+.service-approval-page .actions{flex-wrap:wrap}

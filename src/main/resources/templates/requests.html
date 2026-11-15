@@ -1,0 +1,6 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: page(~{::main})}"><main>
+<div class="page-head"><div><p class="context-label">CƠ HỘI HỢP TÁC</p><h1 th:text="${requestListTitle}">Yêu cầu của tôi</h1></div><a class="btn" th:if="${me.khach}" th:href="@{/yeu-cau/moi}">+ Đăng yêu cầu</a></div><div class="cards"><article class="card" th:each="y:${requests}"><span class="badge" th:text="${@fmt.status(y.trangThai)}"></span><h2><a th:href="@{/yeu-cau/{id}(id=${y.maYeuCau})}" th:text="${y.tieuDe}"></a></h2><p class="clamp" th:text="${y.moTa}"></p><p th:text="${'Đề xuất nhận được: '+requestProposalCounts[y.maYeuCau]}"></p><a class="btn secondary" th:href="${'/yeu-cau/'+y.maYeuCau+'#de-xuat-nhan'}">Xem đề xuất</a><div class="card-bottom"><span th:text="${names[y.maKhachHang]}"></span><strong th:text="${@fmt.money(y.nganSach)}"></strong></div></article></div><p class="empty" th:if="${requests.isEmpty()}">Chưa có yêu cầu công việc.</p>
+</main></html>
+
+

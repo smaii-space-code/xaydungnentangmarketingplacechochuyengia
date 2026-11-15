@@ -1,0 +1,840 @@
+{
+  "base": {
+    "ten_de_tai": "Nền tảng marketplace dịch vụ chuyên gia — Sang Connect",
+    "phien_ban": "ERD cơ sở đã đối chiếu, bàn giao 24/10/2026",
+    "nguon": "SoDo_ERD_BIZ04 (2).drawio do sinh viên cung cấp",
+    "luu_y": "Kiểu logic chưa chốt độ dài varchar/precision decimal. Không bao gồm các mở rộng triển khai mới.",
+    "tables": {
+      "NguoiDung": [
+        {
+          "name": "MaNguoiDung",
+          "key": "PK",
+          "type": "bigint"
+        },
+        {
+          "name": "HoTen",
+          "key": "",
+          "type": "varchar"
+        },
+        {
+          "name": "Email",
+          "key": "UK",
+          "type": "varchar"
+        },
+        {
+          "name": "MatKhauBam",
+          "key": "",
+          "type": "varchar"
+        },
+        {
+          "name": "LaKhachHang",
+          "key": "",
+          "type": "boolean"
+        },
+        {
+          "name": "LaChuyenGia",
+          "key": "",
+          "type": "boolean"
+        },
+        {
+          "name": "LaQuanTriVien",
+          "key": "",
+          "type": "boolean"
+        },
+        {
+          "name": "TrangThai",
+          "key": "",
+          "type": "varchar"
+        }
+      ],
+      "DichVu": [
+        {
+          "name": "MaDichVu",
+          "key": "PK",
+          "type": "bigint"
+        },
+        {
+          "name": "MaChuyenGia",
+          "key": "FK",
+          "type": "bigint"
+        },
+        {
+          "name": "TenDichVu",
+          "key": "",
+          "type": "varchar"
+        },
+        {
+          "name": "LinhVuc",
+          "key": "",
+          "type": "varchar"
+        },
+        {
+          "name": "MoTa",
+          "key": "",
+          "type": "text"
+        },
+        {
+          "name": "GiaThamKhao",
+          "key": "",
+          "type": "decimal"
+        },
+        {
+          "name": "TrangThai",
+          "key": "",
+          "type": "varchar"
+        }
+      ],
+      "YeuCau": [
+        {
+          "name": "MaYeuCau",
+          "key": "PK",
+          "type": "bigint"
+        },
+        {
+          "name": "MaKhachHang",
+          "key": "FK",
+          "type": "bigint"
+        },
+        {
+          "name": "MaDichVu",
+          "key": "FK",
+          "type": "bigint ?"
+        },
+        {
+          "name": "TieuDe",
+          "key": "",
+          "type": "varchar"
+        },
+        {
+          "name": "MoTa",
+          "key": "",
+          "type": "text"
+        },
+        {
+          "name": "NganSach",
+          "key": "",
+          "type": "decimal"
+        },
+        {
+          "name": "HanDuKien",
+          "key": "",
+          "type": "datetime ?"
+        },
+        {
+          "name": "TrangThai",
+          "key": "",
+          "type": "varchar"
+        }
+      ],
+      "DeXuat": [
+        {
+          "name": "MaDeXuat",
+          "key": "PK",
+          "type": "bigint"
+        },
+        {
+          "name": "MaYeuCau",
+          "key": "FK",
+          "type": "bigint"
+        },
+        {
+          "name": "MaChuyenGia",
+          "key": "FK",
+          "type": "bigint"
+        },
+        {
+          "name": "PhuongAn",
+          "key": "",
+          "type": "text"
+        },
+        {
+          "name": "GiaDeXuat",
+          "key": "",
+          "type": "decimal"
+        },
+        {
+          "name": "SoNgayThucHien",
+          "key": "",
+          "type": "int"
+        },
+        {
+          "name": "TrangThai",
+          "key": "",
+          "type": "varchar"
+        }
+      ],
+      "HopDong": [
+        {
+          "name": "MaHopDong",
+          "key": "PK",
+          "type": "bigint"
+        },
+        {
+          "name": "MaYeuCau",
+          "key": "FK, UK",
+          "type": "bigint"
+        },
+        {
+          "name": "MaDeXuat",
+          "key": "FK, UK",
+          "type": "bigint"
+        },
+        {
+          "name": "NoiDungThoaThuan",
+          "key": "",
+          "type": "text"
+        },
+        {
+          "name": "TongGiaTri",
+          "key": "",
+          "type": "decimal"
+        },
+        {
+          "name": "PhienBan",
+          "key": "",
+          "type": "int"
+        },
+        {
+          "name": "PhienBanKhachXacNhan",
+          "key": "",
+          "type": "int ?"
+        },
+        {
+          "name": "PhienBanChuyenGiaXacNhan",
+          "key": "",
+          "type": "int ?"
+        },
+        {
+          "name": "TrangThai",
+          "key": "",
+          "type": "varchar"
+        },
+        {
+          "name": "NgayKetThuc",
+          "key": "",
+          "type": "datetime ?"
+        }
+      ],
+      "MocNghiemThu": [
+        {
+          "name": "MaMocNghiemThu",
+          "key": "PK",
+          "type": "bigint"
+        },
+        {
+          "name": "MaHopDong",
+          "key": "FK",
+          "type": "bigint"
+        },
+        {
+          "name": "ThuTu",
+          "key": "",
+          "type": "int"
+        },
+        {
+          "name": "TenMoc",
+          "key": "",
+          "type": "varchar"
+        },
+        {
+          "name": "NoiDung",
+          "key": "",
+          "type": "text"
+        },
+        {
+          "name": "TieuChiNghiemThu",
+          "key": "",
+          "type": "text"
+        },
+        {
+          "name": "SoTien",
+          "key": "",
+          "type": "decimal"
+        },
+        {
+          "name": "HanBanGiao",
+          "key": "",
+          "type": "datetime"
+        },
+        {
+          "name": "HanNghiemThu",
+          "key": "",
+          "type": "datetime ?"
+        },
+        {
+          "name": "NgayNghiemThu",
+          "key": "",
+          "type": "datetime ?"
+        },
+        {
+          "name": "TrangThai",
+          "key": "",
+          "type": "varchar"
+        }
+      ],
+      "BanGiao": [
+        {
+          "name": "MaBanGiao",
+          "key": "PK",
+          "type": "bigint"
+        },
+        {
+          "name": "MaMocNghiemThu",
+          "key": "FK",
+          "type": "bigint"
+        },
+        {
+          "name": "LanBanGiao",
+          "key": "",
+          "type": "int"
+        },
+        {
+          "name": "MoTa",
+          "key": "",
+          "type": "text"
+        },
+        {
+          "name": "DuongDanSanPham",
+          "key": "",
+          "type": "text"
+        },
+        {
+          "name": "NgayGui",
+          "key": "",
+          "type": "datetime"
+        },
+        {
+          "name": "KetQuaXuLy",
+          "key": "",
+          "type": "varchar"
+        },
+        {
+          "name": "NoiDungYeuCauSua",
+          "key": "",
+          "type": "text ?"
+        },
+        {
+          "name": "NgayXuLy",
+          "key": "",
+          "type": "datetime ?"
+        }
+      ],
+      "GiaoDich": [
+        {
+          "name": "MaGiaoDich",
+          "key": "PK",
+          "type": "bigint"
+        },
+        {
+          "name": "MaMocNghiemThu",
+          "key": "FK",
+          "type": "bigint"
+        },
+        {
+          "name": "MaTranhChap",
+          "key": "FK",
+          "type": "bigint ?"
+        },
+        {
+          "name": "MaNguoiYeuCau",
+          "key": "FK",
+          "type": "bigint ?"
+        },
+        {
+          "name": "LoaiGiaoDich",
+          "key": "",
+          "type": "varchar"
+        },
+        {
+          "name": "SoTien",
+          "key": "",
+          "type": "decimal"
+        },
+        {
+          "name": "TrangThai",
+          "key": "",
+          "type": "varchar"
+        },
+        {
+          "name": "KhoaChongLap",
+          "key": "UK",
+          "type": "varchar"
+        },
+        {
+          "name": "MaThamChieuCong",
+          "key": "UK",
+          "type": "varchar ?"
+        },
+        {
+          "name": "NgayHoanTat",
+          "key": "",
+          "type": "datetime ?"
+        }
+      ],
+      "DanhGia": [
+        {
+          "name": "MaDanhGia",
+          "key": "PK",
+          "type": "bigint"
+        },
+        {
+          "name": "MaHopDong",
+          "key": "FK",
+          "type": "bigint"
+        },
+        {
+          "name": "MaNguoiDanhGia",
+          "key": "FK",
+          "type": "bigint"
+        },
+        {
+          "name": "MaNguoiDuocDanhGia",
+          "key": "FK",
+          "type": "bigint"
+        },
+        {
+          "name": "Diem",
+          "key": "",
+          "type": "int"
+        },
+        {
+          "name": "NoiDung",
+          "key": "",
+          "type": "text"
+        },
+        {
+          "name": "TrangThai",
+          "key": "",
+          "type": "varchar"
+        },
+        {
+          "name": "NgayGui",
+          "key": "",
+          "type": "datetime"
+        },
+        {
+          "name": "NgayCongKhai",
+          "key": "",
+          "type": "datetime ?"
+        },
+        {
+          "name": "LyDoAn",
+          "key": "",
+          "type": "text ?"
+        }
+      ],
+      "TranhChap": [
+        {
+          "name": "MaTranhChap",
+          "key": "PK",
+          "type": "bigint"
+        },
+        {
+          "name": "MaMocNghiemThu",
+          "key": "FK",
+          "type": "bigint"
+        },
+        {
+          "name": "MaNguoiMo",
+          "key": "FK",
+          "type": "bigint"
+        },
+        {
+          "name": "MaQuanTriVienXuLy",
+          "key": "FK",
+          "type": "bigint ?"
+        },
+        {
+          "name": "LyDo",
+          "key": "",
+          "type": "text"
+        },
+        {
+          "name": "TrangThai",
+          "key": "",
+          "type": "varchar"
+        },
+        {
+          "name": "KetLuan",
+          "key": "",
+          "type": "text ?"
+        },
+        {
+          "name": "TienGiaiNgan",
+          "key": "",
+          "type": "decimal ?"
+        },
+        {
+          "name": "TienHoanTra",
+          "key": "",
+          "type": "decimal ?"
+        },
+        {
+          "name": "HuongXuLyHopDong",
+          "key": "",
+          "type": "varchar ?"
+        },
+        {
+          "name": "NgayKetLuan",
+          "key": "",
+          "type": "datetime ?"
+        },
+        {
+          "name": "NgayDong",
+          "key": "",
+          "type": "datetime ?"
+        }
+      ],
+      "BangChungTranhChap": [
+        {
+          "name": "MaBangChung",
+          "key": "PK",
+          "type": "bigint"
+        },
+        {
+          "name": "MaTranhChap",
+          "key": "FK",
+          "type": "bigint"
+        },
+        {
+          "name": "MaNguoiGui",
+          "key": "FK",
+          "type": "bigint"
+        },
+        {
+          "name": "LoaiNoiDung",
+          "key": "",
+          "type": "varchar"
+        },
+        {
+          "name": "NoiDung",
+          "key": "",
+          "type": "text"
+        },
+        {
+          "name": "DuongDanTep",
+          "key": "",
+          "type": "text ?"
+        },
+        {
+          "name": "NgayGui",
+          "key": "",
+          "type": "datetime"
+        }
+      ],
+      "NhatKyXuLy": [
+        {
+          "name": "MaNhatKy",
+          "key": "PK",
+          "type": "bigint"
+        },
+        {
+          "name": "MaNguoiThucHien",
+          "key": "FK",
+          "type": "bigint ?"
+        },
+        {
+          "name": "LoaiDoiTuong",
+          "key": "",
+          "type": "varchar"
+        },
+        {
+          "name": "MaDoiTuong",
+          "key": "",
+          "type": "bigint"
+        },
+        {
+          "name": "HanhDong",
+          "key": "",
+          "type": "varchar"
+        },
+        {
+          "name": "NoiDungLyDo",
+          "key": "",
+          "type": "text ?"
+        },
+        {
+          "name": "ThoiDiem",
+          "key": "",
+          "type": "datetime"
+        }
+      ]
+    },
+    "notes": {
+      "NguoiDung": "Email duy nhất; có thể đồng thời có vai trò khách hàng và chuyên gia.",
+      "DichVu": "MaChuyenGia tham chiếu NguoiDung có vai trò chuyên gia.",
+      "YeuCau": "MaDichVu trống khi khách hàng đăng yêu cầu độc lập.",
+      "DeXuat": "Duy nhất theo cặp (MaYeuCau, MaChuyenGia).",
+      "HopDong": "MaYeuCau và MaDeXuat đều duy nhất trong bảng này.",
+      "MocNghiemThu": "Duy nhất theo cặp (MaHopDong, ThuTu).",
+      "BanGiao": "Duy nhất theo cặp (MaMocNghiemThu, LanBanGiao).",
+      "GiaoDich": "KhoaChongLap và MaThamChieuCong là các khóa duy nhất.",
+      "DanhGia": "Duy nhất theo cặp (MaHopDong, MaNguoiDanhGia).",
+      "TranhChap": "Mỗi mốc có tối đa một tranh chấp chưa đóng tại một thời điểm.",
+      "BangChungTranhChap": "Lưu bằng chứng, phản hồi và yêu cầu bổ sung qua LoaiNoiDung.",
+      "NhatKyXuLy": "MaNguoiThucHien trống khi thao tác do hệ thống thực hiện."
+    },
+    "relations": [
+      {
+        "id": "R01",
+        "parent": "DichVu",
+        "child": "YeuCau",
+        "fk": "MaDichVu",
+        "pcard": "0..1",
+        "ccard": "0..N"
+      },
+      {
+        "id": "R02",
+        "parent": "YeuCau",
+        "child": "DeXuat",
+        "fk": "MaYeuCau",
+        "pcard": "1",
+        "ccard": "0..N"
+      },
+      {
+        "id": "R03",
+        "parent": "YeuCau",
+        "child": "HopDong",
+        "fk": "MaYeuCau",
+        "pcard": "1",
+        "ccard": "0..1"
+      },
+      {
+        "id": "R04",
+        "parent": "DeXuat",
+        "child": "HopDong",
+        "fk": "MaDeXuat",
+        "pcard": "1",
+        "ccard": "0..1"
+      },
+      {
+        "id": "R05",
+        "parent": "HopDong",
+        "child": "DanhGia",
+        "fk": "MaHopDong",
+        "pcard": "1",
+        "ccard": "0..N"
+      },
+      {
+        "id": "R06",
+        "parent": "HopDong",
+        "child": "MocNghiemThu",
+        "fk": "MaHopDong",
+        "pcard": "1",
+        "ccard": "0..N"
+      },
+      {
+        "id": "R07",
+        "parent": "MocNghiemThu",
+        "child": "BanGiao",
+        "fk": "MaMocNghiemThu",
+        "pcard": "1",
+        "ccard": "0..N"
+      },
+      {
+        "id": "R08",
+        "parent": "MocNghiemThu",
+        "child": "GiaoDich",
+        "fk": "MaMocNghiemThu",
+        "pcard": "1",
+        "ccard": "0..N"
+      },
+      {
+        "id": "R09",
+        "parent": "MocNghiemThu",
+        "child": "TranhChap",
+        "fk": "MaMocNghiemThu",
+        "pcard": "1",
+        "ccard": "0..N"
+      },
+      {
+        "id": "R10",
+        "parent": "TranhChap",
+        "child": "GiaoDich",
+        "fk": "MaTranhChap",
+        "pcard": "0..1",
+        "ccard": "0..N"
+      },
+      {
+        "id": "R11",
+        "parent": "TranhChap",
+        "child": "BangChungTranhChap",
+        "fk": "MaTranhChap",
+        "pcard": "1",
+        "ccard": "0..N"
+      },
+      {
+        "id": "R12",
+        "parent": "NguoiDung",
+        "child": "DichVu",
+        "fk": "MaChuyenGia",
+        "pcard": "1",
+        "ccard": "0..N"
+      },
+      {
+        "id": "R13",
+        "parent": "NguoiDung",
+        "child": "YeuCau",
+        "fk": "MaKhachHang",
+        "pcard": "1",
+        "ccard": "0..N"
+      },
+      {
+        "id": "R14",
+        "parent": "NguoiDung",
+        "child": "DeXuat",
+        "fk": "MaChuyenGia",
+        "pcard": "1",
+        "ccard": "0..N"
+      },
+      {
+        "id": "R15",
+        "parent": "NguoiDung",
+        "child": "DanhGia",
+        "fk": "MaNguoiDanhGia",
+        "pcard": "1",
+        "ccard": "0..N"
+      },
+      {
+        "id": "R16",
+        "parent": "NguoiDung",
+        "child": "DanhGia",
+        "fk": "MaNguoiDuocDanhGia",
+        "pcard": "1",
+        "ccard": "0..N"
+      },
+      {
+        "id": "R17",
+        "parent": "NguoiDung",
+        "child": "GiaoDich",
+        "fk": "MaNguoiYeuCau",
+        "pcard": "0..1",
+        "ccard": "0..N"
+      },
+      {
+        "id": "R18",
+        "parent": "NguoiDung",
+        "child": "TranhChap",
+        "fk": "MaNguoiMo",
+        "pcard": "1",
+        "ccard": "0..N"
+      },
+      {
+        "id": "R19",
+        "parent": "NguoiDung",
+        "child": "TranhChap",
+        "fk": "MaQuanTriVienXuLy",
+        "pcard": "0..1",
+        "ccard": "0..N"
+      },
+      {
+        "id": "R20",
+        "parent": "NguoiDung",
+        "child": "BangChungTranhChap",
+        "fk": "MaNguoiGui",
+        "pcard": "1",
+        "ccard": "0..N"
+      },
+      {
+        "id": "R21",
+        "parent": "NguoiDung",
+        "child": "NhatKyXuLy",
+        "fk": "MaNguoiThucHien",
+        "pcard": "0..1",
+        "ccard": "0..N"
+      }
+    ]
+  },
+  "extensions": {
+    "HopDong": [
+      {
+        "name": "TyLePhi",
+        "key": "",
+        "type": "decimal"
+      }
+    ],
+    "GiaoDich": [
+      {
+        "name": "PhiNenTang",
+        "key": "",
+        "type": "decimal"
+      },
+      {
+        "name": "ThucNhan",
+        "key": "",
+        "type": "decimal"
+      }
+    ],
+    "TranhChap": [
+      {
+        "name": "HanNopBangChung",
+        "key": "",
+        "type": "datetime ?"
+      }
+    ],
+    "YeuCauChamDut": [
+      {
+        "name": "MaYeuCauChamDut",
+        "key": "PK",
+        "type": "bigint"
+      },
+      {
+        "name": "MaHopDong",
+        "key": "FK",
+        "type": "bigint"
+      },
+      {
+        "name": "MaMocNghiemThu",
+        "key": "FK",
+        "type": "bigint ?"
+      },
+      {
+        "name": "MaNguoiDeNghi",
+        "key": "FK",
+        "type": "bigint"
+      },
+      {
+        "name": "MaNguoiDongY",
+        "key": "FK",
+        "type": "bigint ?"
+      },
+      {
+        "name": "LyDo",
+        "key": "",
+        "type": "text"
+      },
+      {
+        "name": "TrangThai",
+        "key": "",
+        "type": "varchar"
+      },
+      {
+        "name": "TienChuyenGia",
+        "key": "",
+        "type": "decimal"
+      },
+      {
+        "name": "TienHoanKhach",
+        "key": "",
+        "type": "decimal"
+      },
+      {
+        "name": "NgayDeNghi",
+        "key": "",
+        "type": "datetime"
+      },
+      {
+        "name": "HanPhanHoi",
+        "key": "",
+        "type": "datetime"
+      },
+      {
+        "name": "NgayPhanHoi",
+        "key": "",
+        "type": "datetime ?"
+      }
+    ]
+  },
+  "storage": "SQL Server, NVARCHAR, DATETIME2 UTC, DECIMAL VND; không đổi 106 thuộc tính gốc"
+}
+
