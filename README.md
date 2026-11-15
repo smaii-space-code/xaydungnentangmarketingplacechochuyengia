@@ -1,151 +1,162 @@
-# Sang Connect — Nền tảng marketplace dịch vụ chuyên gia
+Sang Connect — Nền tảng marketing/kết nối chuyên gia và khách hàng
 
-Đồ án cá nhân của **MAI PHƯỚC SANG — 1250080159 — 12_CNPM2**.
+Đồ án môn học · Sinh viên: Mai Phước Sang · MSSV: 1250080159
 
-Ứng dụng web Java/Spring Boot 3.5.16 + Thymeleaf + SQL Server. Chạy cục bộ tại `http://localhost:8081`. Không cần Node.js, Redis hoặc Docker để chạy bản này. Thanh toán chỉ mô phỏng nhưng nghiệp vụ, tài khoản, giao dịch và lịch sử được xử lý/lưu ở máy chủ.
+Sang Connect (mã dự án BIZ-04) là website marketplace cho phép khách hàng tìm và thuê chuyên gia: đăng yêu cầu, nhận đề xuất, thương lượng, ký hợp đồng điện tử, ký quỹ theo từng mốc, nghiệm thu, giải quyết tranh chấp và đánh giá hai chiều.
 
-Khẩu hiệu: **Bạn mang ý tưởng, Sang Connect kết nối chuyên gia.**
+⚠️ Thanh toán chỉ là mô phỏng. Hệ thống dùng tiền mô phỏng (VND nguyên, BigDecimal), không kết nối ví, ngân hàng hay cổng thanh toán thật.
 
-Bản cập nhật đã chạy trên máy này bằng Windows Authentication. Chạy lại từ thư mục có pom.xml (sau khi dừng đúng phiên Sang Connect đang chạy):
+1. Công nghệ sử dụng
+Thành phần	Công nghệ
+Ngôn ngữ / Framework	Java 25, Spring Boot 3.5.16
+Giao diện	Thymeleaf, HTML/CSS/JS
+Truy cập dữ liệu	Spring Data JPA / Hibernate
+Cơ sở dữ liệu	Microsoft SQL Server (chạy thật)
+Quản lý phiên bản CSDL	Flyway (migration V1 → V9)
+Bảo mật	Spring Security (đăng nhập, phân quyền theo vai trò, OTP qua email)
+Gửi email	Spring Mail (SMTP, ví dụ Gmail)
+Build	Maven
+Kiểm thử	JUnit 5, Spring Boot Test, H2 (chỉ ở phạm vi test)
+2. Chức năng chính
+Tài khoản & vai trò: đăng ký khách hàng / chuyên gia, xác thực OTP qua email, hồ sơ, CCCD (mã hóa), menu theo vai trò, quản trị viên xét duyệt chuyên gia.
+Khám phá: danh mục chuyên gia và dịch vụ, phân trang, xem chi tiết.
+Yêu cầu – đề xuất: khách hàng đăng yêu cầu, chuyên gia gửi đề xuất, khách chấp thuận hoặc từ chối.
+Đề nghị thuê: khách hàng đề nghị trực tiếp một chuyên gia, điều chỉnh qua nhiều phiên bản có lịch sử.
+Hợp đồng điện tử: kiểm tra quyền theo từng hợp đồng, hai bên cùng một phiên bản mới được ký.
+Ký quỹ theo mốc & tất toán: ký quỹ từng mốc, chỉ tất toán sau khi giao dịch thành công; phí nền tảng 10% (quy ước minh họa).
+Chấm dứt & tranh chấp: phản hồi chấm dứt trong 3 ngày, bằng chứng trong 5 ngày, giữ tiền khi tranh chấp, chỉ đóng hợp đồng sau khi xử lý tiền.
+Đánh giá hai chiều: ẩn đến khi đủ hai đánh giá hoặc hết 14 ngày kể từ khi kết thúc.
+Xử lý đồng thời: khóa dữ liệu và đọc lại dữ liệu mới, chống bấm lặp.
+3. Cấu trúc thư mục
+├── anhtrongbaocao/        # Ảnh dùng trong báo cáo
+├── sodotrongbaocao/       # Sơ đồ dùng trong báo cáo (ERD, luồng nghiệp vụ...)
+├── sql/                   # Tài liệu / script SQL tham khảo
+├── src/
+│   ├── main/
+│   │   ├── java/          # Mã nguồn Spring Boot (vn.biz04.*)
+│   │   └── resources/     # Thymeleaf templates, static, Flyway migration (V1–V9)
+│   └── test/              # Kiểm thử tự động
+├── cau-hinh-email.ps1     # Script cấu hình SMTP để gửi OTP
+├── chay.ps1               # Script build và chạy ứng dụng trên Windows
+├── pom.xml                # Cấu hình Maven
+└── README.md
+4. Yêu cầu môi trường
+Windows 10/11 và PowerShell (khuyến nghị PowerShell 7 – pwsh)
+JDK 25
+Apache Maven 3.9 trở lên
+SQL Server (bản Express/Developer đều được) đang chạy, bật TCP/IP cổng 1433
+Tùy chọn: tài khoản Gmail + Mật khẩu ứng dụng để gửi OTP thật
 
-```powershell
+Kiểm tra nhanh:
+
+powershell
+java --version
+mvn -v
+Get-Service MSSQLSERVER      # Trạng thái phải là Running
+5. Hướng dẫn cài đặt và chạy
+Bước 1 — Tải mã nguồn
+powershell
+git clone https://github.com/smaii-space-code/xaydungnentangmarketingplacechochuyengia.git
+cd xaydungnentangmarketingplacechochuyengia
+Bước 2 — Tạo cơ sở dữ liệu
+
+Mở SQL Server Management Studio (hoặc sqlcmd) và tạo một database trống tên BIZ04:
+
+sql
+CREATE DATABASE BIZ04;
+
+Khi ứng dụng khởi động, Flyway tự chạy các migration V1 → V9 để tạo bảng. Không cần chạy tay và không chỉnh sửa các migration đã áp dụng.
+
+Bước 3 — Chuẩn bị xác thực SQL Server
+
+Chọn một trong hai cách:
+
+Cách A — SQL Server Authentication (đơn giản nhất): dùng tài khoản SQL (ví dụ sa); script sẽ hỏi tên đăng nhập và mật khẩu khi chạy.
+
+Cách B — Windows Authentication: cần thư viện mssql-jdbc_auth-13.4.0.x64.dll.
+
+Tải gói Microsoft JDBC Driver 13.4 for SQL Server và lấy file DLL x64 trong thư mục auth.
+Đặt vào: .tools\sqlserver\mssql-jdbc_auth-13.4.0.x64.dll
+Bước 4 — (Tùy chọn) Cấu hình gửi OTP qua email
+powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\chay.ps1 -EmailSetup ...
+
+Hoặc chạy trực tiếp cau-hinh-email.ps1 và nhập Gmail cùng Mật khẩu ứng dụng khi được hỏi. Hệ thống dùng các biến môi trường:
+
+Biến	Ý nghĩa
+BIZ04_SMTP_HOST, BIZ04_SMTP_PORT	Máy chủ và cổng SMTP (Gmail: smtp.gmail.com, 587)
+BIZ04_SMTP_USERNAME, BIZ04_SMTP_PASSWORD, BIZ04_SMTP_FROM	Tài khoản gửi và mật khẩu ứng dụng
+BIZ04_OTP_HMAC_KEY	Khóa băm OTP
+BIZ04_CCCD_KEY	Khóa mã hóa số CCCD
+
+🔒 Không commit mật khẩu, khóa hay file chứa bí mật lên GitHub. Hãy đặt giá trị cho BIZ04_OTP_HMAC_KEY và BIZ04_CCCD_KEY một lần rồi giữ nguyên — đổi khóa sẽ làm dữ liệu đã mã hóa không đọc lại được.
+
+Bước 5 — Chạy ứng dụng
+
+Lần đầu (build rồi chạy), với Windows Authentication:
+
+powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\chay.ps1 -WindowsAuth -AppPort 8081
+
+Với SQL Server Authentication (bỏ -WindowsAuth, script sẽ hỏi tài khoản và mật khẩu):
+
+powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\chay.ps1 -AppPort 8081
+
+Chạy lại khi mã nguồn chưa thay đổi (bỏ qua bước build):
+
+powershell
 pwsh -NoProfile -ExecutionPolicy Bypass -File .\chay.ps1 -WindowsAuth -SkipBuild -AppPort 8081
-```
 
-Video 720p và poster được đóng gói trong `src/main/resources/static/videos/`. Tệp nguồn độ phân giải cao và video build được loại khỏi repository.
+Đợi dòng Started MarketplaceApplication trong console, rồi mở trình duyệt: http://localhost:8081/
 
-## 1. Trạng thái bản bàn giao
+Các tham số của chay.ps1
+Tham số	Mặc định	Ý nghĩa
+-ServerName	localhost	Địa chỉ SQL Server
+-Port	1433	Cổng SQL Server
+-Database	BIZ04	Tên cơ sở dữ liệu
+-DbUser	(hỏi khi chạy)	Tên đăng nhập SQL (khi không dùng Windows Auth)
+-AppPort	8081	Cổng của website
+-WindowsAuth	tắt	Dùng Windows Authentication
+-SkipBuild	tắt	Bỏ qua mvn package
+-Demo	tắt	Nạp dữ liệu demo — chỉ dùng cho CSDL mới, không dùng với dữ liệu đã có
+-EmailSetup	tắt	Chạy cấu hình SMTP trước khi khởi động
 
-- Có mã cho UC01–UC15: tài khoản/vai trò, dịch vụ/tìm kiếm, yêu cầu, đề xuất, hợp đồng/phiên bản/mốc, ký quỹ, bàn giao/tệp, nghiệm thu/sửa, tất toán, đánh giá ẩn, tranh chấp, bằng chứng và quản trị.
-- Có mở rộng chấm dứt đồng thuận/chuyển tranh chấp, phân bổ tiền, phí minh họa và nhật ký.
-- Đã biên dịch và kiểm thử nghiệp vụ bằng H2 ở test scope. Xem `docs/KET_QUA_KIEM_TRA.md` cho số liệu và các giới hạn.
-- Đã chạy JAR trên SQL Server thật qua Windows Authentication tại cổng 8081; Flyway xác nhận hai migration hợp lệ. Hai kiểm thử chỉ mục/khóa đồng thời trên BIZ04_Test vẫn bỏ qua. Xem docs/CAP_NHAT_SANG_CONNECT.md cho bằng chứng mới nhất.
+Dừng ứng dụng bằng Ctrl + C. Nhật ký ghi tại .run/application.log.
 
-## 2. Chuẩn bị trên Windows
+6. Các trang chính
+Đường dẫn	Mô tả
+/ , /trang/trangchu	Trang chủ
+/ve-sang-connect	Giới thiệu dự án / người sáng lập
+/dang-ky	Chọn nhánh đăng ký (khách hàng / chuyên gia)
+/bang-dieu-khien	Bảng điều khiển theo vai trò
+/de-nghi-thue/da-gui, /de-nghi-thue/nhan	Đề nghị thuê đã gửi / đã nhận
+/quan-tri/chuyen-gia	Quản trị: xét duyệt chuyên gia
+7. Build và kiểm thử
+powershell
+mvn test        # Chạy kiểm thử (dùng H2 trong bộ nhớ)
+mvn package     # Đóng gói target/marketplace-1.0.0.jar
+Kiểm thử trên H2 chỉ để kiểm tra nhanh, không thay thế việc chạy thật trên SQL Server.
+SqlServerIntegrationTest mặc định được bỏ qua. Muốn chạy trên SQL Server, dùng một database riêng tên BIZ04_Test và đặt biến môi trường BIZ04_TEST_SQLSERVER=true.
+Nếu máy thiếu javac, có thể dùng profile tùy chọn: mvn -P compiler-eclipse test. Máy đã cài JDK thì dùng Maven bình thường.
+8. Xử lý sự cố thường gặp
+Hiện tượng	Cách xử lý
+Cong 8081 dang duoc su dung	Đổi cổng: thêm -AppPort 8082, hoặc tắt tiến trình đang chiếm cổng
+Thieu thu vien Windows Authentication	Thêm file mssql-jdbc_auth-13.4.0.x64.dll vào .tools\sqlserver\ hoặc bỏ -WindowsAuth
+Không kết nối được SQL Server	Kiểm tra dịch vụ SQL Server đang Running, bật TCP/IP cổng 1433 trong SQL Server Configuration Manager, và database BIZ04 đã được tạo
+Lỗi Flyway khi khởi động	Đọc .run/application.log; không xóa hay sửa migration đã áp dụng
+Build chua thanh cong	Chạy mvn package thủ công để xem lỗi đầy đủ; kiểm tra phiên bản JDK
+Không nhận được email OTP	Chạy lại với -EmailSetup, dùng Mật khẩu ứng dụng của Gmail (không phải mật khẩu đăng nhập Gmail)
+Cảnh báo HTTP Status: 401 về flyway-community-db-support khi build	Cảnh báo vô hại, có thể bỏ qua
+9. Quy ước nghiệp vụ minh họa
 
-Máy người dùng đã có Java 25, Maven 3.10.0 và MSSQLSERVER đang chạy theo ảnh cung cấp. Phiên bản SQL Server, TCP/IP và tài khoản kết nối cần được xác nhận.
+Các giá trị dưới đây là quy ước dùng cho đồ án, không phải quy định thực tế:
 
-1. Giải nén, mở thư mục có `pom.xml` trong VS Code.
-2. Mở SSMS, kết nối SQL Server. Chạy `sql/01_tao_database.sql` để tạo database mới `BIZ04` nếu chưa có và lấy thông tin máy chủ. Lệnh không xóa dữ liệu.
-3. Chuẩn bị tên đăng nhập **SQL Server Authentication** có quyền trên database BIZ04 để Flyway tạo bảng/chỉ mục. Tài khoản riêng cho đồ án được ưu tiên. Nếu hiện chỉ đăng nhập bằng Windows Authentication, hãy gửi kiểu đăng nhập và tên máy chủ cho giảng viên hướng dẫn; đừng tự đổi cấu hình hay cài lại SQL Server.
-4. Xác nhận cổng TCP thật. `localhost:1433` là cấu hình khởi đầu cho instance mặc định; không phải kết quả đã kiểm tra trên máy em. SSMS có thể kết nối bằng Shared Memory trong khi JDBC/TCP vẫn chưa hoạt động.
-
-## 3. Chạy lần đầu
-
-Mở PowerShell tại thư mục có `pom.xml`, chạy:
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\chay.ps1 -ServerName localhost -Port 1433 -Demo
-```
-
-Thay `localhost` và cổng khi thông tin máy chủ thực tế khác. Script build bằng Maven, hỏi tên đăng nhập SQL Server và hỏi mật khẩu ở chế độ ẩn; không lưu mật khẩu vào mã nguồn. Lần build đầu cần Internet để Maven tải các thư viện. JDBC được tải bằng Maven, không cần tự chép JAR.
-
-Đợi dòng `Started MarketplaceApplication`, sau đó mở `http://localhost:8081`. Nếu có lỗi trước dòng này thì ứng dụng chưa khởi động thành công; chụp đoạn lỗi cuối, không gửi mật khẩu.
-
-`-Demo` chỉ tạo dữ liệu mẫu khi bảng người dùng đang trống. Không reset hoặc ghi đè tài khoản đã có.
-
-Khi chạy với `-Demo`, ứng dụng tạo các tài khoản mẫu sau:
-
-| Vai trò | Email |
-|---|---|
-| Quản trị viên | admin@biz04.local |
-| Khách hàng | khach@biz04.local |
-| Chuyên gia thiết kế | chuyengia@biz04.local |
-| Chuyên gia nội dung | noidung@biz04.local |
-| Người ngoài hợp đồng | ngoai@biz04.local |
-
-Trước lần tạo dữ liệu mẫu, đặt `BIZ04_DEMO_PASSWORD` thành mật khẩu riêng tại máy cục bộ (tối thiểu 8 ký tự); cùng mật khẩu này được dùng cho các tài khoản mẫu. Không lưu mật khẩu vào repository. Đăng ký công khai không được tạo quản trị viên.
-
-Các lần sau, nếu mã không thay đổi:
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\chay.ps1 -ServerName localhost -Port 1433 -SkipBuild
-```
-
-Nhấn Ctrl+C để dừng. Dữ liệu nghiệp vụ vẫn ở SQL Server. Tệp bàn giao/bằng chứng ở `du-lieu/tep`; giữ thư mục này cùng cơ sở dữ liệu khi sao lưu/chuyển máy.
-
-## 4. Cách chạy bằng biến môi trường
-
-Nếu cần tự chạy lệnh, ví dụ sau chỉ dùng giá trị mẫu và nhập mật khẩu cục bộ:
-
-```powershell
-$env:BIZ04_DB_URL = 'jdbc:sqlserver://localhost:1433;databaseName=BIZ04;encrypt=true;trustServerCertificate=true;loginTimeout=10;'
-$env:BIZ04_DB_USER = Read-Host 'Nhap ten dang nhap SQL Server'
-$biz04Secret = Read-Host 'Nhap mat khau SQL Server' -AsSecureString
-$env:BIZ04_DB_PASSWORD = [System.Net.NetworkCredential]::new('', $biz04Secret).Password
-$biz04DemoSecret = Read-Host 'Nhap mat khau rieng cho tai khoan demo (toi thieu 8 ky tu)' -AsSecureString
-$env:BIZ04_DEMO_PASSWORD = [System.Net.NetworkCredential]::new('', $biz04DemoSecret).Password
-$env:BIZ04_DEMO = 'true'
-mvn spring-boot:run
-```
-
-Ứng dụng bind `127.0.0.1` cho phạm vi cục bộ. `trustServerCertificate=true` ở ví dụ phục vụ máy phát triển; chưa phải cấu hình triển khai Internet.
-
-## 5. Kịch bản trình diễn nhanh
-
-1. Đăng nhập khách hàng, đăng yêu cầu độc lập hoặc chọn dịch vụ có sẵn để tạo yêu cầu.
-2. Đăng nhập chuyên gia ở một trình duyệt/phiên riêng, gửi đề xuất. Với yêu cầu xuất phát từ dịch vụ, chỉ chuyên gia đăng dịch vụ đó gửi đề xuất.
-3. Khách chọn đề xuất, tạo hợp đồng. Thêm các mốc, tổng tiền bằng tổng hợp đồng. Hai bên đọc và xác nhận cùng phiên bản; sửa nội dung/mốc sẽ hủy hiệu lực xác nhận cũ.
-4. Khách ký quỹ mốc 1. Thử ký quỹ mốc 2 trước tất toán mốc 1 sẽ bị chặn.
-5. Chuyên gia nộp tệp/đường dẫn. Khách có thể yêu cầu sửa, chuyên gia nộp lại, rồi khách nghiệm thu. Chọn kết quả giải ngân mô phỏng Thất bại để thấy mốc chưa tất toán, sau đó thử lại Thành công.
-6. Làm tiếp các mốc. Hợp đồng chỉ Hoàn thành khi tất cả mốc đã tất toán.
-7. Khách gửi đánh giá. Đối tác chưa thấy nội dung/điểm. Chuyên gia gửi đánh giá thứ hai thì hai đánh giá hợp lệ được công khai. Nếu chỉ một bên gửi, tác vụ hết hạn công khai sau 14 ngày từ kết thúc.
-8. Với hợp đồng khác đang có ký quỹ, mở tranh chấp, gửi bằng chứng. Quản trị viên xem, yêu cầu bổ sung hoặc kết luận giải ngân/hoàn/chia. Chọn mô phỏng hoàn tiền thất bại để thấy hồ sơ chưa đóng; thử lại không giải ngân lặp phần đã thành công.
-9. Với hợp đồng nhiều mốc, thử đề nghị chấm dứt và phân bổ ký quỹ mốc hiện tại. Bên còn lại đồng ý thì thực thi; không đồng ý khi còn tiền thì chuyển tranh chấp. Mốc chưa nạp không có khoản để hoàn.
-
-Tác vụ nội bộ kiểm tra nghiệm thu/đánh giá hết hạn mỗi 60 giây. Nó không đổi hạn 14 ngày để chạy demo nhanh. Không tự hoàn tiền chỉ vì hết thời hạn phản hồi chấm dứt; khi chưa thống nhất phải giữ tiền/giải quyết tiếp.
-
-## 6. Quy tắc và mở rộng dữ liệu
-
-ERD cơ sở giữ đủ **12 bảng, 106 thuộc tính, 21 FK** trong `docs/ERD_BIZ04_CoSo.json`. `V1__erd_co_so.sql` hiện thực mô hình đó bằng kiểu SQL Server phù hợp tiếng Việt.
-
-`V2__phi_va_cham_dut.sql` bổ sung rõ: `HopDong.TyLePhi`, `GiaoDich.PhiNenTang`, `GiaoDich.ThucNhan`, `TranhChap.HanNopBangChung` và bảng `YeuCauChamDut` 12 thuộc tính/4 FK. Bản hiện thực có 13 bảng miền, 122 thuộc tính, 25 FK; không gọi ERD cũ là đã có phần mở rộng.
-
-Tiền dùng BigDecimal, VND nguyên. Phí 10% được chốt trên hợp đồng; tính trên phần trước phí phân bổ cho chuyên gia, làm tròn HALF_UP đến đồng. Ký quỹ/hoàn khách không thu phí. Thời hạn phản hồi chấm dứt 3 ngày và bằng chứng 5 ngày là quy ước minh họa của đồ án. Nghiệm thu và đánh giá đều 14 ngày nhưng tính từ hai sự kiện khác nhau.
-
-Thời điểm lưu UTC bằng DATETIME2; giao diện đổi sang giờ Việt Nam. Chỉ giao dịch THÀNH CÔNG tham gia số dư/phí/thu nhập. Lần thử thất bại được giữ trong bản ghi thao tác và nhật ký, thử lại cùng khóa không ghi nhận tiền lặp.
-
-Flyway quản lý lược đồ, Hibernate chỉ validate. Không dùng ddl-auto=update/create với database thật. Nếu BIZ04 đã có bảng không do migration này tạo, dừng để đối chiếu, không xóa/reset/baseline tùy tiện.
-
-## 7. Kiểm thử
-
-```powershell
-mvn test
-```
-
-Các ca nghiệp vụ dùng H2 trong test scope; H2 không nằm trong JAR chạy thật. Có kiểm tra trang, CSRF, quyền đối tượng và không rò rỉ đánh giá. Đây không thay cho kiểm chứng SQL Server.
-
-Để chạy kiểm thử riêng với SQL Server, tạo database **BIZ04_Test** tách biệt và cấp quyền phù hợp. Không dùng BIZ04 đang demo:
-
-```powershell
-$env:BIZ04_TEST_SQLSERVER = 'true'
-$env:BIZ04_TEST_DB_URL = 'jdbc:sqlserver://localhost:1433;databaseName=BIZ04_Test;encrypt=true;trustServerCertificate=true;loginTimeout=10;'
-# BIZ04_DB_USER va BIZ04_DB_PASSWORD da dat cuc bo.
-mvn '-Dtest=SqlServerIntegrationTest' test
-```
-
-Hai ca kiểm tra chỉ mục unique có điều kiện/NULL và ký quỹ đồng thời trên SQL Server. Chúng tạo dữ liệu có tên riêng trong BIZ04_Test và không tự xóa database. Tệp kiểm thử chặn URL không chỉ rõ BIZ04_Test.
-
-## 8. Cấu trúc mã
-
-- `domain`: 12 lớp miền cơ sở và lớp mở rộng YeuCauChamDut; ánh xạ tên bảng/cột PascalCase.
-- `data/Store`: truy xuất ORM và khóa bản ghi cha.
-- `service`: tài khoản, dịch vụ/yêu cầu/đề xuất, hợp đồng, tiền, bàn giao, đánh giá, tranh chấp, chấm dứt, tệp.
-- `security`: đăng nhập, mã hóa mật khẩu, phiên, CSRF và quyền truy cập trang.
-- `web`: controller, dữ liệu hiển thị, định dạng và thông báo lỗi.
-- `config`: dữ liệu mẫu và tác vụ hết hạn.
-- `templates`/`static`: giao diện Thymeleaf và CSS cục bộ, không phụ thuộc CDN.
-- `db/migration`: migration SQL Server có phiên bản.
-
-Mở rộng còn có thể làm sau: thông báo email thật, nhắn tin, tìm kiếm nâng cao, giao diện tiện dụng hơn và triển khai Internet. Chưa tích hợp cổng tiền thật hoặc ví/rút ngân hàng.
-
-
-
-## Đăng ký OTP và hồ sơ khách hàng
-
-Bản cập nhật dùng migration V3, giữ dữ liệu cũ. Xem [hướng dẫn cấu hình Gmail, khóa OTP/CCCD và kết quả kiểm tra](docs/DANG_KY_OTP_HO_SO.md). Để nhập mật khẩu ứng dụng Gmail trực tiếp trên máy và chạy web, dùng `pwsh -NoProfile -ExecutionPolicy Bypass -File .\chay.ps1 -WindowsAuth -SkipBuild -AppPort 8081 -EmailSetup` sau khi dừng đúng tiến trình đang chạy.
-
-## Đường dẫn truy cập
-
-Trang chủ có video: http://localhost:8081/ . Danh sách dịch vụ đã đổi sang http://localhost:8081/trang/trangchu ; /dich-vu chuyển hướng đến đường dẫn mới. Xem [bằng chứng kiểm tra trang chủ](docs/KIEM_TRA_TRANG_CHU.md).
-
+Phí nền tảng: 10%
+Thời hạn phản hồi yêu cầu chấm dứt: 3 ngày
+Thời hạn nộp bằng chứng: 5 ngày
+Đánh giá hai bên được hiển thị khi đủ hai đánh giá hoặc sau 14 ngày kể từ khi kết thúc
+10. Tác giả
+Họ tên: Mai Phước Sang
+MSSV: 1250080159
+GitHub: smaii-space-code
