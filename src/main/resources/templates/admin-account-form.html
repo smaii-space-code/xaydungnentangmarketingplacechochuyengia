@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: page(~{::main})}">
+<main>
+  <link rel="stylesheet" th:href="@{/css/admin-account.css}">
+  <section class="panel narrow">
+    <p><a th:href="@{/quan-tri}">← Quản trị</a></p>
+    <h1>Tạo tài khoản</h1>
+    <p class="notice danger" th:if="${formError}" th:text="${formError}" role="alert"></p>
+    <form th:action="@{/quan-tri/tai-khoan/tao}" method="post" enctype="multipart/form-data" id="admin-account-form">
+      <label>Vai trò đăng ký
+        <select name="kind" required>
+          <option value="KHACH_HANG" th:selected="${fields['kind'] != 'CHUYEN_GIA'}">Khách hàng</option>
+          <option value="CHUYEN_GIA" th:selected="${fields['kind'] == 'CHUYEN_GIA'}">Chuyên gia</option>
+        </select>
+      </label>
+      <label>Họ tên<input name="hoTen" required maxlength="100" th:value="${fields['hoTen']}"></label>
+      <label>Email<input name="email" type="email" required maxlength="254" th:value="${fields['email']}"></label>
+      <label>Số điện thoại<input name="soDienThoai" type="tel" required pattern="0[35789][0-9]{8}" maxlength="10" th:value="${fields['soDienThoai']}"></label>
+      <label>Mật khẩu<input name="password" type="password" required minlength="8" autocomplete="new-password"></label>
+      <label>Nhập lại mật khẩu<input name="passwordAgain" type="password" required minlength="8" autocomplete="new-password"></label>
+      <p class="hint">Mật khẩu tối thiểu 8 ký tự, tối đa 72 byte UTF-8.</p>
+      <fieldset data-customer>
+        <legend>Hồ sơ khách hàng</legend>
+        <label>Loại khách hàng
+          <select name="loaiKhachHang">
+            <option value="CA_NHAN">Cá nhân</option>
+            <option value="TO_CHUC" th:selected="${fields['loaiKhachHang'] == 'TO_CHUC'}">Tổ chức</option>
+          </select>
+        </label>
+        <label>Tên tổ chức<input name="tenToChuc" maxlength="200" th:value="${fields['tenToChuc']}"></label>
+      </fieldset>
+      <fieldset data-expert>
+        <legend>Hồ sơ chuyên gia</legend>
+        <label>Lĩnh vực chuyên môn<input name="linhVuc" minlength="2" maxlength="100" th:value="${fields['linhVuc']}"></label>
+        <label>Giới thiệu chuyên môn<textarea name="gioiThieu" minlength="20" maxlength="2000" rows="5" th:text="${fields['gioiThieu']}"></textarea></label>
+        <div th:replace="~{admin-account-avatar :: upload(false)}"></div>
+      </fieldset>
+      <p>Email được xác nhận khi quản trị viên tạo tài khoản. Khách hàng có thể đăng nhập ngay. Hồ sơ chuyên gia cần được duyệt riêng.</p>
+      <button class="btn">Tạo tài khoản</button>
+    </form>
+  </section>
+  <script th:src="@{/js/admin-account.js}" defer></script>
+</main>
+</html>

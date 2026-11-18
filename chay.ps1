@@ -11,7 +11,10 @@ param(
 )
 $ErrorActionPreference = 'Continue'
 Set-Location $PSScriptRoot
-if ($EmailSetup) { . (Join-Path $PSScriptRoot 'cau-hinh-email.ps1') }
+if ($EmailSetup) {
+    # Environment variables are shared with the child scope, but its error policy is local.
+    try { & (Join-Path $PSScriptRoot 'cau-hinh-email.ps1') } catch { throw }
+}
 foreach ($biz04KeyName in @('BIZ04_OTP_HMAC_KEY','BIZ04_CCCD_KEY')) {
     if ([string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable($biz04KeyName,'Process'))) {
         $biz04SavedKey = [Environment]::GetEnvironmentVariable($biz04KeyName,'User')
@@ -55,6 +58,8 @@ $biz04OldUser = $env:BIZ04_DB_USER
 $biz04OldUrl = $env:BIZ04_DB_URL
 $biz04OldDemo = $env:BIZ04_DEMO
 $biz04OldPort = $env:BIZ04_PORT
+$biz04RunDir = Join-Path $PSScriptRoot '.run'
+$biz04RunningJar = Join-Path $biz04RunDir ('marketplace-running-' + [Guid]::NewGuid().ToString('N') + '.jar')
 try {
     $env:BIZ04_DB_URL = ('jdbc:sqlserver://{0}:{1};databaseName={2};encrypt=true;trustServerCertificate=true;loginTimeout=10;' -f $ServerName,$Port,$Database)
     if ($WindowsAuth) { $env:BIZ04_DB_URL += 'integratedSecurity=true;authenticationScheme=NativeAuthentication;' }
@@ -62,14 +67,19 @@ try {
     $env:BIZ04_DB_PASSWORD = if ($WindowsAuth) { '' } else { [System.Net.NetworkCredential]::new('', $biz04Secret).Password }
     $env:BIZ04_DEMO = if ($Demo) { 'true' } else { 'false' }
     $env:BIZ04_PORT = "$AppPort"
-    New-Item -ItemType Directory -Force (Join-Path $PSScriptRoot '.run') | Out-Null
+    New-Item -ItemType Directory -Force $biz04RunDir | Out-Null
+    # Package can replace target/marketplace-1.0.0.jar while Java is still serving requests.
+    Copy-Item -LiteralPath $biz04Jar -Destination $biz04RunningJar -ErrorAction Stop
     Write-Host "Sang Connect: http://localhost:$AppPort . Doi thong bao Started MarketplaceApplication."
     Write-Host 'Thanh toan chi la mo phong. Ctrl+C de dung. Log: .run/application.log'
     $biz04JvmArgs = @('-Xms128m', '-Xmx768m')
     if ($WindowsAuth) { $biz04JvmArgs += "-Djava.library.path=$biz04AuthDir" }
-    & $biz04Java @biz04JvmArgs '-jar' $biz04Jar 2>&1 | Tee-Object -FilePath (Join-Path $PSScriptRoot '.run\application.log')
+    & $biz04Java @biz04JvmArgs '-jar' $biz04RunningJar 2>&1 |
+        ForEach-Object { $_.ToString() } |
+        Tee-Object -FilePath (Join-Path $PSScriptRoot '.run\application.log')
     if ($LASTEXITCODE -ne 0) { throw 'Ung dung dung voi loi. Kiem tra thong bao JDBC/Flyway va cau hinh SQL Server.' }
 } finally {
+    if (Test-Path -LiteralPath $biz04RunningJar) { Remove-Item -LiteralPath $biz04RunningJar -ErrorAction SilentlyContinue }
     $env:BIZ04_DB_PASSWORD = $biz04OldPassword
     $env:BIZ04_DB_USER = $biz04OldUser
     $env:BIZ04_DB_URL = $biz04OldUrl

@@ -19,5 +19,14 @@ public class Global {
     @ModelAttribute("names") @Transactional(readOnly=true) public Map<Long,String> names(){Map<Long,String> names=new HashMap<>();for(Object[] u:db.list("select u.maNguoiDung,u.hoTen from NguoiDung u",Object[].class))names.put((Long)u[0],(String)u[1]);return names;}
     @ExceptionHandler(BusinessException.class) public String business(BusinessException e,RedirectAttributes r,HttpServletRequest req){r.addFlashAttribute("error",e.getMessage());return "redirect:"+("/dang-ky".equals(req.getRequestURI())?"/dang-ky":"/bang-dieu-khien");}
     @ExceptionHandler(DataIntegrityViolationException.class) public String integrity(RedirectAttributes r){r.addFlashAttribute("error","Dữ liệu bị trùng hoặc đang được thao tác ở phiên khác. Hãy tải lại trang trước khi thử lại.");return "redirect:/bang-dieu-khien";}
-    @ExceptionHandler(MaxUploadSizeExceededException.class) public String large(RedirectAttributes r){r.addFlashAttribute("error","Tệp quá lớn. Giới hạn tải lên là 20 MB.");return "redirect:/bang-dieu-khien";}
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public String large(RedirectAttributes r,HttpServletRequest request){
+        String path=request.getRequestURI().substring(request.getContextPath().length());
+        if(path.equals("/quan-tri/tai-khoan/tao")||path.matches("/quan-tri/tai-khoan/[0-9]+/anh-dai-dien")){
+            r.addFlashAttribute("error","Ảnh đại diện không được vượt quá 2 MB.");
+            return "redirect:"+path.replaceFirst("/anh-dai-dien$","");
+        }
+        r.addFlashAttribute("error","Tệp quá lớn. Giới hạn tải lên là 20 MB.");
+        return "redirect:/bang-dieu-khien";
+    }
 }

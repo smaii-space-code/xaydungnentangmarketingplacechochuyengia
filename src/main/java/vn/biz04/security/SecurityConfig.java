@@ -19,7 +19,7 @@ public class SecurityConfig {
     @Bean UserDetailsService userDetailsService(Store db,TransactionTemplate tx) {
         return email->tx.execute(s->{NguoiDung u=db.first("from NguoiDung u where lower(u.email)=:e",NguoiDung.class,"e",email.toLowerCase(Locale.ROOT)).orElseThrow(()->new UsernameNotFoundException("Tài khoản không tồn tại"));List<String> roles=new ArrayList<>();if(u.getLaKhachHang())roles.add("KHACH_HANG");if(u.getLaChuyenGia())roles.add("CHUYEN_GIA");if(u.getLaQuanTriVien())roles.add("QUAN_TRI");return new AccountPrincipal(u,roles);});
     }
-    @Bean DaoAuthenticationProvider accountProvider(UserDetailsService users,PasswordEncoder encoder,Store db,TransactionTemplate tx){
+    @Bean DaoAuthenticationProvider accountProvider(UserDetailsService users,PasswordEncoder encoder,Store db,TransactionTemplate tx,OtpService otp){
         DaoAuthenticationProvider provider=new DaoAuthenticationProvider(users);provider.setPasswordEncoder(encoder);
         // State is private: always validate credentials before showing pending/rejection information.
         provider.setPreAuthenticationChecks(details->{});
@@ -27,6 +27,8 @@ public class SecurityConfig {
             if(!(details instanceof AccountPrincipal p))throw new DisabledException("Account unavailable");
             tx.executeWithoutResult(s->{NguoiDung u=db.get(NguoiDung.class,p.id());
                 if(p.epoch()!=u.getPhienBaoMat())throw new DisabledException("Account changed");
+                if(p.getUsername().equalsIgnoreCase(u.getEmail())&&otp.awaitingRegistrationEmail(u))
+                    throw new ExpertLoginFailure.EmailVerificationRequired(otp.pendingLogin(u));
                 if("CHUYEN_GIA".equals(u.getNguonDangKy())&&Set.of("CHO_DUYET_CHUYEN_GIA","TU_CHOI_CHUYEN_GIA").contains(u.getTrangThai())&&"DA_XAC_THUC".equals(u.getTrangThaiEmail()))throw new ExpertLoginFailure.ReviewRequired(p.id());
                 if(!"HOAT_DONG".equals(u.getTrangThai())||(u.getLaChuyenGia()&&!ExpertEligibility.eligible(db,u)))throw new DisabledException("Account unavailable");
             });
@@ -39,7 +41,7 @@ public class SecurityConfig {
         var details=new org.springframework.security.web.util.matcher.OrRequestMatcher(new org.springframework.security.web.util.matcher.AntPathRequestMatcher("/chuyen-gia/**"),new org.springframework.security.web.util.matcher.AntPathRequestMatcher("/dich-vu/xem/**"));
         var entryPoints=new LinkedHashMap<org.springframework.security.web.util.matcher.RequestMatcher,org.springframework.security.web.AuthenticationEntryPoint>();entryPoints.put(details,discoveryLogin);
         var entryPoint=new org.springframework.security.web.authentication.DelegatingAuthenticationEntryPoint(entryPoints);entryPoint.setDefaultEntryPoint(new org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint("/dang-nhap"));
-        return http.authenticationProvider(accountProvider).authorizeHttpRequests(a->a.requestMatchers("/","/trang/trangchu","/ve-sang-connect","/images/mai-phuoc-sang.jpg","/dich-vu","/dang-nhap","/dang-ky","/dang-ky/**","/xac-thuc-email","/xac-thuc-email/**","/css/**","/js/**","/videos/**","/error").permitAll().anyRequest().authenticated())
+        return http.authenticationProvider(accountProvider).authorizeHttpRequests(a->a.requestMatchers("/quan-tri/tai-khoan/**").hasRole("QUAN_TRI").requestMatchers("/","/trang/trangchu","/ve-sang-connect","/images/mai-phuoc-sang.jpg","/anh-chuyen-gia/*","/dich-vu","/dang-nhap","/dang-ky","/dang-ky/**","/xac-thuc-email","/xac-thuc-email/**","/css/**","/js/**","/videos/**","/error").permitAll().anyRequest().authenticated())
           .exceptionHandling(e->e.authenticationEntryPoint(entryPoint))
           .formLogin(f->f.loginPage("/dang-nhap").usernameParameter("email").passwordParameter("password").successHandler(discoveryLogin).failureHandler(loginFailure).permitAll())
           .addFilterAfter(accountSessions,org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)

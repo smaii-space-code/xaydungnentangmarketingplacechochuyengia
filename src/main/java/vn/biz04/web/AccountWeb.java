@@ -17,6 +17,7 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import jakarta.servlet.http.*;
 import vn.biz04.data.Store;
 import vn.biz04.domain.NguoiDung;
+import vn.biz04.security.ExpertLoginFailure;
 import vn.biz04.service.*;
 import java.security.Principal;
 import java.util.*;
@@ -46,6 +47,41 @@ public class AccountWeb {
     }
     private String token(HttpSession session,boolean change){return (String)session.getAttribute(change?CHANGE:PENDING);}
     @GetMapping("/xac-thuc-email") String otpPage(HttpSession session,Model m,RedirectAttributes r){return showOtp(session,null,false,m,r);}
+    @GetMapping("/xac-thuc-email/tu-dang-nhap")
+    String pendingLoginPage(Principal principal,HttpSession session,Model model,RedirectAttributes flash){
+        if(principal!=null)return "redirect:/bang-dieu-khien";
+        try {
+            model.addAttribute("email",otp.pendingLoginEmail(loginProof(session)));
+            return "otp-pending-login";
+        } catch(BusinessException ex) {
+            return expiredLoginProof(session,flash,ex);
+        }
+    }
+    @PostMapping("/xac-thuc-email/tu-dang-nhap")
+    String sendFromLogin(Principal principal,HttpServletRequest request,RedirectAttributes flash){
+        if(principal!=null)return "redirect:/bang-dieu-khien";
+        HttpSession session=request.getSession();
+        try {
+            var result=otp.sendPendingLoginCode(loginProof(session),request.getRemoteAddr());
+            flash.addFlashAttribute(result.success()?"success":"error",result.message());
+            if(result.token()!=null){
+                session.removeAttribute(ExpertLoginFailure.PENDING_EMAIL);
+                session.setAttribute(PENDING,result.token());
+                return "redirect:/xac-thuc-email";
+            }
+            return "redirect:/xac-thuc-email/tu-dang-nhap";
+        } catch(BusinessException ex) {
+            return expiredLoginProof(session,flash,ex);
+        }
+    }
+    private static OtpService.PendingLogin loginProof(HttpSession session){
+        return session.getAttribute(ExpertLoginFailure.PENDING_EMAIL) instanceof OtpService.PendingLogin proof?proof:null;
+    }
+    private static String expiredLoginProof(HttpSession session,RedirectAttributes flash,BusinessException ex){
+        session.removeAttribute(ExpertLoginFailure.PENDING_EMAIL);
+        flash.addFlashAttribute("error",ex.getMessage());
+        return "redirect:/dang-nhap";
+    }
     @PostMapping("/xac-thuc-email/tiep-tuc") String resumeRegistration(@RequestParam String email,@RequestParam String password,HttpServletRequest req,RedirectAttributes r){
         try{OtpService.Result result=otp.resumeRegistration(email,password,req.getRemoteAddr());r.addFlashAttribute(result.success()?"success":"error",result.message());if(result.token()!=null){req.getSession().setAttribute(PENDING,result.token());if(req.getSession().getAttribute(ExpertRegistrationWeb.RESULT)!=null)req.getSession().setAttribute(ExpertRegistrationWeb.RESULT,result);return "redirect:/xac-thuc-email";}}
         catch(BusinessException ex){r.addFlashAttribute("error",ex.getMessage());}return "redirect:/dang-ky";

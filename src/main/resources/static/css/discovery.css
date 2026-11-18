@@ -23,6 +23,7 @@
 .discovery-page .person-heading{display:flex;align-items:center;gap:16px;min-width:0}
 .discovery-page .person-heading>div{min-width:0}
 .discovery-page .person-avatar{display:flex;align-items:center;justify-content:center;flex:none;width:64px;height:64px;border-radius:50%;background:var(--light);color:var(--blue);font-size:22px;font-weight:600;text-decoration:none;object-fit:cover}
+.discovery-page .person-avatar img{width:100%;height:100%;border-radius:inherit;object-fit:cover}
 .discovery-page .person-avatar-large{width:80px;height:80px;font-size:28px}
 .discovery-page .person-heading h3,.discovery-page .person-heading h2{font-size:20px;line-height:1.3;margin:0;overflow-wrap:anywhere}
 .discovery-page .person-heading a:not(.person-avatar),.discovery-page .package-card h3 a{color:var(--ink)}

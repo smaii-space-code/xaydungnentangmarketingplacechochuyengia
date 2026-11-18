@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: page(~{::main})}">
+<main>
+  <section class="panel narrow" th:if="${review == null}">
+    <p><a th:href="@{/quan-tri/tai-khoan/{id}(id=${account.id})}">← Chi tiết tài khoản</a></p>
+    <h1>Chuyển sang chuyên gia</h1>
+    <p><strong th:text="${account.name}"></strong> · <span th:text="${account.email}"></span> · <span th:text="${'#' + account.id}"></span></p>
+    <p class="notice danger" th:if="${formError}" th:text="${formError}" role="alert"></p>
+    <p th:if="${account.conversionBlock != null}" th:text="${account.conversionBlock}"></p>
+    <form th:if="${account.conversionBlock == null}" method="post"
+          th:action="@{/quan-tri/tai-khoan/{id}/chuyen-chuyen-gia/ra-soat(id=${account.id})}">
+      <label>Số điện thoại liên hệ
+        <input name="phone" type="tel" required maxlength="10" pattern="0[35789][0-9]{8}"
+               th:readonly="${account.contact != null and account.contact.phone != null and account.contact.phone.matches('0[35789][0-9]{8}')}"
+               th:value="${input != null ? input['phone'] : (account.contact != null ? account.contact.phone : '')}">
+      </label>
+      <label>Lĩnh vực chuyên môn
+        <input name="field" required minlength="2" maxlength="100"
+               th:value="${input != null ? input['field'] : (account.expert != null ? account.expert.field : '')}">
+      </label>
+      <label>Giới thiệu chuyên môn
+        <textarea name="bio" required minlength="20" maxlength="2000" rows="5"
+                  th:text="${input != null ? input['bio'] : (account.expert != null ? account.expert.bio : '')}"></textarea>
+      </label>
+      <label>Lý do xét duyệt
+        <textarea name="reason" required maxlength="2000" rows="3" th:text="${input != null ? input['reason'] : ''}"></textarea>
+      </label>
+      <button class="btn">Rà soát hồ sơ</button>
+    </form>
+  </section>
+  <section class="panel narrow" th:if="${review != null}">
+    <h1>Xác nhận chuyển sang chuyên gia</h1>
+    <dl>
+      <dt>Tài khoản</dt><dd th:text="${'#' + review.id + ' · ' + review.name + ' · ' + review.email}"></dd>
+      <dt>Số điện thoại</dt><dd th:text="${review.phone}"></dd>
+      <dt>Lĩnh vực chuyên môn</dt><dd th:text="${review.field}"></dd>
+      <dt>Giới thiệu chuyên môn</dt><dd class="pre" th:text="${review.bio}"></dd>
+      <dt>Lý do xét duyệt</dt><dd class="pre" th:text="${review.reason}"></dd>
+    </dl>
+    <p>Sau khi xác nhận, tài khoản có vai trò Chuyên gia và cần đăng nhập lại. Lịch sử khách hàng vẫn thuộc tài khoản này.</p>
+    <form method="post" th:action="@{/quan-tri/tai-khoan/{id}/chuyen-chuyen-gia(id=${review.id})}">
+      <input type="hidden" name="ticket" th:value="${ticket}">
+      <button class="btn">Duyệt và chuyển vai trò</button>
+      <a th:href="@{/quan-tri/tai-khoan/{id}/chuyen-chuyen-gia(id=${review.id})}">Quay lại rà soát</a>
+    </form>
+  </section>
+</main>
+</html>

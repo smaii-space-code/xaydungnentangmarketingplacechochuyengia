@@ -1,0 +1,1 @@
+ALTER TABLE dbo.XacNhanHopDong ADD ChuKyPng VARBINARY(MAX) NULL;

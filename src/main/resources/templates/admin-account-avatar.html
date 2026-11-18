@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="upload(required)" data-avatar-upload>
+  <label th:text="${required ? 'Chọn ảnh mới' : 'Ảnh đại diện (tùy chọn)'}" for="avatar">Chọn ảnh</label>
+  <input id="avatar" name="avatar" type="file" accept="image/jpeg,image/png,image/webp" th:required="${required}" aria-describedby="avatar-limit">
+  <p class="hint" id="avatar-limit">JPEG, PNG hoặc WebP, tối đa 2 MB và 4.096 pixel mỗi chiều.</p>
+  <p class="notice danger" data-avatar-error role="alert" hidden></p>
+  <figure data-avatar-preview hidden>
+    <figcaption>Xem trước ảnh mới</figcaption>
+    <img class="admin-avatar" alt="Xem trước ảnh đại diện">
+  </figure>
+</div>
+</html>

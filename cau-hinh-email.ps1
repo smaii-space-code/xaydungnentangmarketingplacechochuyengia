@@ -11,10 +11,15 @@ foreach ($biz04KeyName in @('BIZ04_OTP_HMAC_KEY','BIZ04_CCCD_KEY')) {
     }
     if ([string]::IsNullOrWhiteSpace($biz04KeyValue)) {
         $biz04KeyBytes = [byte[]]::new(32)
-        [Security.Cryptography.RandomNumberGenerator]::Fill($biz04KeyBytes)
-        $biz04KeyValue = [Convert]::ToBase64String($biz04KeyBytes)
+        $biz04Random = [Security.Cryptography.RandomNumberGenerator]::Create()
+        try {
+            $biz04Random.GetBytes($biz04KeyBytes)
+            $biz04KeyValue = [Convert]::ToBase64String($biz04KeyBytes)
+        } finally {
+            [Array]::Clear($biz04KeyBytes,0,$biz04KeyBytes.Length)
+            $biz04Random.Dispose()
+        }
         [Environment]::SetEnvironmentVariable($biz04KeyName,$biz04KeyValue,'User')
-        [Array]::Clear($biz04KeyBytes,0,$biz04KeyBytes.Length)
         Write-Host "Da tao $biz04KeyName trong bien moi truong nguoi dung. Giu on dinh khoa nay khi sao luu/chuyen may."
     }
     try { if ([Convert]::FromBase64String($biz04KeyValue).Length -ne 32) { throw 'Invalid key length' } }

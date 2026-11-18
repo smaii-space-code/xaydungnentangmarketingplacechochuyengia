@@ -35,17 +35,17 @@ class CatalogDiscoveryTest {
     NguoiDung a,b,customer;String prefix,field;DichVu a1,a2,b1;
     @BeforeEach void setup(){
         prefix="C"+UUID.randomUUID();field="Thiết kế "+prefix;
-        a=TestAccounts.create(db,"Nguyễn Minh An "+prefix,prefix+"a@test.local","Demo@12345",false,true);
-        b=TestAccounts.create(db,"Trần Quỳnh Bình "+prefix,prefix+"b@test.local","Demo@12345",false,true);
-        customer=TestAccounts.create(db,"Khách kiểm tra "+prefix,prefix+"c@test.local","Demo@12345",true,false);
+        a=TestAccounts.create(db,"Nguyễn Minh An "+prefix,prefix+"a@test.local","Demo@62481",false,true);
+        b=TestAccounts.create(db,"Trần Quỳnh Bình "+prefix,prefix+"b@test.local","Demo@62481",false,true);
+        customer=TestAccounts.create(db,"Khách kiểm tra "+prefix,prefix+"c@test.local","Demo@62481",true,false);
         a1=service(a,"Nhận diện thương hiệu",field);a2=service(a,"Thiết kế giao diện",field);b1=service(b,"Website doanh nghiệp","Phát triển "+prefix);
-        HoSoKhachHang profile=new HoSoKhachHang();profile.maNguoiDung=a.getMaNguoiDung();profile.gioiThieu="Tôi thiết kế trải nghiệm sản phẩm và nhận diện thương hiệu. "+"Giới thiệu chuyên môn. ".repeat(16)+"BIO_DETAIL_ONLY";profile.soDienThoai="0912345678";profile.soCccdMaHoa="PRIVATE-CIPHER";profile.cccdBonSoCuoi="1234";profile.diaChi="PRIVATE-ADDRESS";db.save(profile);db.flush();
+        HoSoKhachHang profile=new HoSoKhachHang();profile.maNguoiDung=a.getMaNguoiDung();profile.gioiThieu="Tôi thiết kế trải nghiệm sản phẩm và nhận diện thương hiệu. "+"Giới thiệu chuyên môn. ".repeat(16)+"BIO_DETAIL_ONLY";profile.soDienThoai="0962481678";profile.soCccdMaHoa="PRIVATE-CIPHER";profile.cccdBonSoCuoi="1234";profile.diaChi="PRIVATE-ADDRESS";db.save(profile);db.flush();
     }
     DichVu service(NguoiDung owner,String name,String category){return testServices.create(owner.getMaNguoiDung(),null,name+" "+prefix,category,"Dịch vụ có phạm vi rõ ràng. "+"Mô tả chi tiết chuyên môn. ".repeat(16)+"SERVICE_DETAIL_ONLY",new BigDecimal("2500000"));}
     CatalogDiscovery.Filter filter(String keyword){return CatalogDiscovery.Filter.parse(keyword,"","1","1");}
     String html(String path,NguoiDung viewer)throws Exception{var req=get(path);if(viewer!=null)req.with(user(viewer.getEmail()));return mvc.perform(req).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();}
     @Test void expertsAreUniqueAndRequireAnApprovedPublicService(){
-        NguoiDung independent=TestAccounts.create(db,"Chuyên gia độc lập "+prefix,prefix+"i@test.local","Demo@12345",false,true);db.flush();
+        NguoiDung independent=TestAccounts.create(db,"Chuyên gia độc lập "+prefix,prefix+"i@test.local","Demo@62481",false,true);db.flush();
         var listing=discovery.listing(filter(prefix));assertEquals(2,listing.experts().total());assertEquals(3,listing.services().total());assertEquals(1,listing.experts().items().stream().filter(e->e.id().equals(a.getMaNguoiDung())).count());assertFalse(listing.experts().items().stream().anyMatch(e->e.id().equals(independent.getMaNguoiDung())));
     }
     @Test void onlyActiveExpertsAndTheirPublishedServicesAppear(){
@@ -62,7 +62,7 @@ class CatalogDiscoveryTest {
         a1.setTenDichVu("100%_[!] "+prefix);db.flush();assertEquals(1,discovery.listing(filter("100%_[!] "+prefix)).services().total());assertEquals(0,discovery.listing(filter("%all%"+prefix)).services().total());
     }
     @Test void independentDatabasePagesKeepBothPageNumbersAndFilters(){
-        for(int i=0;i<8;i++){NguoiDung u=TestAccounts.create(db,"Chuyên gia "+i+" "+prefix,prefix+i+"@test.local","Demo@12345",false,true);service(u,"Gói dịch vụ "+i,field);}db.flush();
+        for(int i=0;i<8;i++){NguoiDung u=TestAccounts.create(db,"Chuyên gia "+i+" "+prefix,prefix+i+"@test.local","Demo@62481",false,true);service(u,"Gói dịch vụ "+i,field);}db.flush();
         var first=discovery.listing(CatalogDiscovery.Filter.parse(prefix,field,"1","2"));var second=discovery.listing(CatalogDiscovery.Filter.parse(prefix,field,"2","2"));assertEquals(9,first.experts().total());assertEquals(10,first.services().total());assertEquals(6,first.experts().items().size());assertEquals(3,second.experts().items().size());assertEquals(first.services().items(),second.services().items());assertTrue(first.experts().next().contains("trangDichVu=2"));assertTrue(first.experts().next().contains("trangChuyenGia=2"));assertTrue(first.experts().next().contains("linhVuc="));assertTrue(first.services().previous().contains("trangChuyenGia=1"));
         Set<Long> seen=new HashSet<>();first.experts().items().forEach(e->seen.add(e.id()));second.experts().items().forEach(e->assertTrue(seen.add(e.id())));assertTrue(first.experts().items().get(0).id()>first.experts().items().get(1).id());
     }
@@ -72,7 +72,7 @@ class CatalogDiscoveryTest {
         var result=discovery.listing(CatalogDiscovery.Filter.parse(prefix,"","99999","99999"));assertEquals(1,result.experts().number());assertTrue(result.services().items().size()<=CatalogDiscovery.PAGE_SIZE);
     }
     @Test void publicCardsCarrySummariesAndNoPrivateFields()throws Exception{
-        String body=html("/trang/trangchu?q="+prefix,null);for(String secret:List.of(a.getEmail(),b.getEmail(),a.getMatKhauBam(),"0912345678","PRIVATE-CIPHER","PRIVATE-ADDRESS","SERVICE_DETAIL_ONLY","BIO_DETAIL_ONLY"))assertFalse(body.contains(secret),secret);
+        String body=html("/trang/trangchu?q="+prefix,null);for(String secret:List.of(a.getEmail(),b.getEmail(),a.getMatKhauBam(),"0962481678","PRIVATE-CIPHER","PRIVATE-ADDRESS","SERVICE_DETAIL_ONLY","BIO_DETAIL_ONLY"))assertFalse(body.contains(secret),secret);
         assertTrue(discovery.listing(filter(prefix)).experts().items().stream().allMatch(e->e.introduction()==null||e.introduction().length()<=240));assertTrue(discovery.listing(filter(prefix)).services().items().stream().allMatch(d->d.summary().length()<=240));
         assertFalse(body.contains("mai-phuoc-sang.jpg"));assertTrue(body.contains("Chưa có đánh giá"));
     }
@@ -103,11 +103,11 @@ class CatalogDiscoveryTest {
         }
     }
     @Test void loginReturnsToAllowedDetailAndConsumesTheTarget()throws Exception{
-        MockHttpSession session=new MockHttpSession();String target="/dich-vu/xem/"+a1.getMaDichVu();mvc.perform(get(target).session(session)).andExpect(redirectedUrl("/dang-ky?chiTiet=1"));mvc.perform(post("/dang-nhap").session(session).with(csrf()).param("email",customer.getEmail()).param("password","Demo@12345")).andExpect(redirectedUrl(target));assertNull(session.getAttribute(DiscoveryLoginFlow.TARGET));
+        MockHttpSession session=new MockHttpSession();String target="/dich-vu/xem/"+a1.getMaDichVu();mvc.perform(get(target).session(session)).andExpect(redirectedUrl("/dang-ky?chiTiet=1"));mvc.perform(post("/dang-nhap").session(session).with(csrf()).param("email",customer.getEmail()).param("password","Demo@62481")).andExpect(redirectedUrl(target));assertNull(session.getAttribute(DiscoveryLoginFlow.TARGET));
     }
     @Test void unsafeRemovedAndUnlistedReturnTargetsFallBackWithoutLoops()throws Exception{
         for(String target:List.of("https://evil.test/","//evil.test/","/quan-tri","/chuyen-gia/1?next=//evil.test","/chuyen-gia/../quan-tri","/dich-vu/xem/999999999","/chuyen-gia/999999999")){
-            MockHttpSession session=new MockHttpSession();session.setAttribute(DiscoveryLoginFlow.TARGET,target);mvc.perform(post("/dang-nhap").session(session).with(csrf()).param("email",customer.getEmail()).param("password","Demo@12345")).andExpect(redirectedUrl("/bang-dieu-khien"));assertNull(session.getAttribute(DiscoveryLoginFlow.TARGET));
+            MockHttpSession session=new MockHttpSession();session.setAttribute(DiscoveryLoginFlow.TARGET,target);mvc.perform(post("/dang-nhap").session(session).with(csrf()).param("email",customer.getEmail()).param("password","Demo@62481")).andExpect(redirectedUrl("/bang-dieu-khien"));assertNull(session.getAttribute(DiscoveryLoginFlow.TARGET));
         }
         assertFalse(DiscoveryLoginFlow.allowed("/%2f%2fevil.test"));
     }
@@ -123,9 +123,9 @@ class CatalogDiscoveryTest {
     }
     @Test void registrationOtpAndLoginKeepTheSelectedDetail()throws Exception{
         AtomicReference<String> code=new AtomicReference<>();when(mail.send(anyString(),anyString())).thenAnswer(call->{code.set(call.getArgument(1));return OtpMailGateway.Delivery.ACCEPTED;});String email=prefix+"new@test.local",target="/chuyen-gia/"+a.getMaNguoiDung();MockHttpSession session=new MockHttpSession();mvc.perform(get(target).session(session)).andExpect(redirectedUrl("/dang-ky?chiTiet=1"));
-        mvc.perform(post("/dang-ky").session(session).with(csrf()).param("hoTen","Người xem mới").param("email",email).param("password","Demo@12345").param("passwordAgain","Demo@12345").param("soDienThoai","0912345678").param("loaiKhachHang","CA_NHAN")).andExpect(redirectedUrl("/xac-thuc-email"));assertNotNull(code.get());
-        mvc.perform(post("/dang-nhap").session(session).with(csrf()).param("email",email).param("password","Demo@12345")).andExpect(redirectedUrl("/dang-nhap?error"));assertEquals(target,session.getAttribute(DiscoveryLoginFlow.TARGET));
-        mvc.perform(post("/xac-thuc-email").session(session).with(csrf()).param("code",code.get())).andExpect(redirectedUrl("/dang-nhap"));mvc.perform(post("/dang-nhap").session(session).with(csrf()).param("email",email).param("password","Demo@12345")).andExpect(redirectedUrl(target));
+        mvc.perform(post("/dang-ky").session(session).with(csrf()).param("hoTen","Người xem mới").param("email",email).param("password","Demo@62481").param("passwordAgain","Demo@62481").param("soDienThoai","0962481678").param("loaiKhachHang","CA_NHAN")).andExpect(redirectedUrl("/xac-thuc-email"));assertNotNull(code.get());
+        mvc.perform(post("/dang-nhap").session(session).with(csrf()).param("email",email).param("password","Demo@62481")).andExpect(redirectedUrl("/xac-thuc-email/tu-dang-nhap"));assertEquals(target,session.getAttribute(DiscoveryLoginFlow.TARGET));
+        mvc.perform(post("/xac-thuc-email").session(session).with(csrf()).param("code",code.get())).andExpect(redirectedUrl("/dang-nhap"));mvc.perform(post("/dang-nhap").session(session).with(csrf()).param("email",email).param("password","Demo@62481")).andExpect(redirectedUrl(target));
     }
     @Test void homeKeepsHeroAndUsesBoundedRealDataWithConsistentDestinations()throws Exception{
         var home=discovery.home(filter(""));assertTrue(home.experts().items().size()<=3);assertTrue(home.services().items().size()<=3);
@@ -135,7 +135,7 @@ class CatalogDiscoveryTest {
         for(int i=0;i<6;i++)service(a,"Gói thiết kế sản phẩm "+i,field);
         // Human-readable visual fixtures stay in the rolled-back test transaction only.
         a.setHoTen("Nguyễn Minh An");b.setHoTen("Trần Quỳnh Bình");customer.setHoTen("Lê Thanh Hà");
-        TestAccounts.create(db,"Phạm Gia Linh",prefix+"visual@test.local","Demo@12345",false,true);
+        TestAccounts.create(db,"Phạm Gia Linh",prefix+"visual@test.local","Demo@62481",false,true);
         db.get(HoSoKhachHang.class,a.getMaNguoiDung()).gioiThieu="Tôi thiết kế trải nghiệm sản phẩm và nhận diện thương hiệu. Từ nghiên cứu nhu cầu đến hoàn thiện giao diện, tôi cùng khách hàng xác định phạm vi và theo dõi từng mốc công việc.";
         for(DichVu d:db.list("from DichVu d where d.maChuyenGia in :ids",DichVu.class,"ids",List.of(a.getMaNguoiDung(),b.getMaNguoiDung()))){d.setTenDichVu(d.getTenDichVu().replace(" "+prefix,""));d.setLinhVuc(d.getMaChuyenGia().equals(a.getMaNguoiDung())?"Thiết kế":"Phát triển website");d.setMoTa("Trao đổi nhu cầu, thống nhất phạm vi và xây dựng sản phẩm phù hợp với mục tiêu của bạn. Bản bàn giao được đối chiếu theo các tiêu chí đã thống nhất.\n\nPhạm vi công việc được làm rõ trong quá trình trao đổi đề xuất và hợp đồng.");}
         db.flush();Path folder=Path.of(".run","catalog-qa","rendered");Files.createDirectories(folder);

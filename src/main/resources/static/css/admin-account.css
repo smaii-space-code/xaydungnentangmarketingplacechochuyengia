@@ -1,0 +1,19 @@
+.admin-avatar {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.admin-avatar-default {
+    display: inline-grid;
+    place-items: center;
+    background: #e9f4ef;
+    color: #1b6244;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+[data-avatar-upload] figure {
+    margin: 0.75rem 0;
+}

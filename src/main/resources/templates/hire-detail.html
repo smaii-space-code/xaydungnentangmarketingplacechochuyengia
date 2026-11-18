@@ -3,7 +3,19 @@
 <aside class="panel"><h2>Các bên liên quan</h2><p>Khách hàng: <strong th:text="${r.customerName}"></strong></p><p>Chuyên gia: <strong th:text="${r.expertName}"></strong></p><p th:if="${r.source != null}">Dịch vụ nguồn: <span th:text="${r.sourceTitle}"></span></p><p class="hint">Đã gửi: <span th:text="${@fmt.offsetDate(r.sent)}"></span><br>Cập nhật: <span th:text="${@fmt.offsetDate(r.updated)}"></span></p>
 <p th:if="${r.waiting != null}">Bên đang chờ phản hồi: <strong th:text="${r.waiting == r.customer ? r.customerName : r.expertName}"></strong></p>
 <div th:if="${offer.canRespond}" class="hire-response"><a class="btn" th:href="@{/de-nghi-thue/{id}/chap-thuan(id=${r.id},phienBan=${r.current})}" th:text="${r.current > 1 ? 'Chấp thuận điều chỉnh' : 'Chấp thuận'}"></a><details><summary>Không chấp thuận</summary><div class="hire-choices"><a th:href="@{/de-nghi-thue/{id}/dieu-chinh(id=${r.id},phienBan=${r.current})}" th:text="${me.id == r.customer ? 'Đề nghị điều chỉnh lại' : 'Đề nghị điều chỉnh'}"></a><a class="danger-text" th:href="@{/de-nghi-thue/{id}/tu-choi(id=${r.id},phienBan=${r.current})}">Từ chối đề nghị thuê</a><a th:href="@{/de-nghi-thue/{id}(id=${r.id})}">Hủy lựa chọn</a></div></details></div>
-<div th:if="${r.state == 'DA_THONG_NHAT'}" class="notice success"><p th:text="${'Hai bên đã thống nhất phiên bản '+offer.agreed+'.'}"></p><div th:with="link=${planLink}"><p th:if="${link != null}"><span th:text="${link.label}"></span><br><a th:href="${link.url}" th:text="${link.text}"></a></p></div><p th:if="${planLink == null or planLink.state != 'DA_LAP_HOP_DONG'}">Chưa tạo hoặc ký hợp đồng, ký quỹ hay giải ngân từ đề nghị này.</p></div>
+<div th:if="${r.state == 'DA_THONG_NHAT'}" class="notice success">
+    <p th:text="${'Hai bên đã thống nhất phiên bản '+offer.agreed+'.'}"></p>
+    <th:block th:if="${planLink != null}">
+        <p th:text="${planLink.label}"></p>
+        <div class="actions">
+            <a th:if="${planLink.state == 'DA_THONG_NHAT' and me.id == r.customer and !me.admin}"
+               class="btn" th:href="@{/ke-hoach-moc/thue/{id}/hop-dong(id=${r.id})}">Rà soát và lập hợp đồng</a>
+            <a th:classappend="${planLink.state == 'DA_LAP_HOP_DONG' ? 'btn' : ''}"
+               th:href="${planLink.url}" th:text="${planLink.text}"></a>
+        </div>
+        <p th:if="${planLink.state == 'DA_THONG_NHAT' and me.id == r.expert}">Sau khi khách hàng lập hợp đồng, hai bên có thể mở cùng một bản để xem và ký tại đây.</p>
+    </th:block>
+</div>
 <div th:if="${r.state == 'BI_TU_CHOI'}" class="notice danger"><strong>Bị từ chối</strong><p class="pre" th:text="${offer.rejection}"></p><p class="hint"><span th:text="${offer.deciderName}"></span> · <span th:text="${@fmt.offsetDate(offer.decided)}"></span></p></div></aside></div>
 <section id="lich-su" class="panel"><h2>Lịch sử phiên bản</h2><details th:each="v:${offer.history.items}"><summary><span th:text="${'Phiên bản '+v.number+' · '+v.authorName}"></span> · <span th:text="${@fmt.offsetDate(v.sent)}"></span></summary><dl th:replace="~{hire-parts :: terms(${v})}"></dl><p class="pre" th:if="${v.reason != null}" th:text="${v.reason}"></p></details><nav th:replace="~{hire-parts :: pages(${offer.history})}"></nav></section>
 </main></html>

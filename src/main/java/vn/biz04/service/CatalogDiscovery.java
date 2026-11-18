@@ -35,7 +35,7 @@ public class CatalogDiscovery {
         public String url(int experts,int services,String anchor){return UriComponentsBuilder.fromPath("/trang/trangchu").queryParam("q",q).queryParam("linhVuc",field).queryParam("trangChuyenGia",experts).queryParam("trangDichVu",services).fragment(anchor).build().encode().toUriString();}
         public String all(String anchor){return url(1,1,anchor);}
     }
-    public record Expert(Long id,String name,String initials,String introduction,List<String> fields,long reviewCount,Double average,long completed){}
+    public record Expert(Long id,String name,String initials,String introduction,List<String> fields,long reviewCount,Double average,long completed,boolean hasAvatar){}
     public record ServiceItem(Long id,Long ownerId,String title,String field,String summary,BigDecimal price,String ownerName){}
     public record ServiceDetail(Long id,Long ownerId,String title,String field,String description,BigDecimal price){}
     public record Review(String author,int score,String text,LocalDateTime date){}
@@ -83,7 +83,8 @@ public class CatalogDiscovery {
         Map<Long,Long> completed=new HashMap<>();
         for(Object[] r:query("select d.maChuyenGia,count(h) from HopDong h join h.maDeXuatLienKet d where d.maChuyenGia in :ids and h.maKeHoach is null and h.trangThai='HOAN_THANH' group by d.maChuyenGia",Object[].class,params).getResultList())completed.put((Long)r[0],(Long)r[1]);
         for(Object[] r:query("select h.maChuyenGia,count(h) from HopDong h where h.maKeHoach is not null and h.maChuyenGia in :ids and h.trangThai='HOAN_THANH' group by h.maChuyenGia",Object[].class,params).getResultList())completed.merge((Long)r[0],(Long)r[1],Long::sum);
-        return rows.stream().map(r->{Long id=(Long)r[0];Object[] rating=ratings.get(id);return new Expert(id,(String)r[1],initials((String)r[1]),(String)r[2],List.copyOf(fields.getOrDefault(id,List.of())),rating==null?0:(Long)rating[1],rating==null?null:((Number)rating[2]).doubleValue(),completed.getOrDefault(id,0L));}).toList();
+        Set<Long> avatarIds = new HashSet<>(query("select a.userId from AnhDaiDienChuyenGia a where a.userId in :ids", Long.class, params).getResultList());
+        return rows.stream().map(r->{Long id=(Long)r[0];Object[] rating=ratings.get(id);return new Expert(id,(String)r[1],initials((String)r[1]),(String)r[2],List.copyOf(fields.getOrDefault(id,List.of())),rating==null?0:(Long)rating[1],rating==null?null:((Number)rating[2]).doubleValue(),completed.getOrDefault(id,0L),avatarIds.contains(id));}).toList();
     }
     private static String initials(String name){String[] words=name.strip().split("\\s+");String first=words[0].substring(0,words[0].offsetByCodePoints(0,1)),last=words.length>1?words[words.length-1].substring(0,words[words.length-1].offsetByCodePoints(0,1)):"";return (first+last).toUpperCase(Locale.ROOT);}
     public Expert expert(Long id){
@@ -102,7 +103,7 @@ public class CatalogDiscovery {
         var rows=query("select d.maDichVu,d.maChuyenGia,d.tenDichVu,d.linhVuc,d.moTa,d.giaThamKhao"+SERVICES+"where d.maDichVu=:id and "+SERVICE,Object[].class,Map.of("id",id)).getResultList();
         if(rows.isEmpty())throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Dịch vụ không tồn tại hoặc không còn công khai.");
         Object[] r=rows.get(0);ServiceDetail service=new ServiceDetail((Long)r[0],(Long)r[1],(String)r[2],(String)r[3],(String)r[4],(BigDecimal)r[5]);
-        Expert full=expert(service.ownerId());Expert summary=new Expert(full.id(),full.name(),full.initials(),shortText(full.introduction()),full.fields(),full.reviewCount(),full.average(),full.completed());
+        Expert full=expert(service.ownerId());Expert summary=new Expert(full.id(),full.name(),full.initials(),shortText(full.introduction()),full.fields(),full.reviewCount(),full.average(),full.completed(),full.hasAvatar());
         Map<String,Object> params=Map.of("owner",service.ownerId(),"id",id);String where="where "+SERVICE+" and d.maChuyenGia=:owner and d.maDichVu<>:id";
         long count=query("select count(d)"+SERVICES+where,Long.class,params).getSingleResult();return new Detail(service,summary,serviceRows(where,params,0,RELATED_LIMIT),count);
     }

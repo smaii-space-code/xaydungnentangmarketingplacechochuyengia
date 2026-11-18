@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: page(~{::main})}">
+<main>
+  <section class="auth-card account-form">
+    <h1>Xác thực email để đăng nhập</h1>
+    <p>Tài khoản đang chờ xác thực. Gửi mã OTP đến <strong th:text="${email}"></strong> để tiếp tục.</p>
+    <div class="notice danger" th:if="${error}" th:text="${error}" role="alert"></div>
+    <form th:action="@{/xac-thuc-email/tu-dang-nhap}" method="post">
+      <button class="btn full">Gửi mã xác thực</button>
+    </form>
+    <p><a th:href="@{/dang-nhap}">← Quay lại đăng nhập</a></p>
+  </section>
+</main>
+</html>

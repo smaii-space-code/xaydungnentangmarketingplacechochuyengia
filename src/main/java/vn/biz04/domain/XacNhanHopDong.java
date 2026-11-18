@@ -11,5 +11,6 @@ public class XacNhanHopDong {
     @Column(name="PhienBan",nullable=false) public int version;
     @Column(name="MaNguoiXacNhan",nullable=false) public Long actor;
     @Column(name="DauKiem",nullable=false,length=64) public String digest;
+    @Column(name="ChuKyPng",columnDefinition="varbinary(max)") public byte[] signature;
     @TimeZoneStorage(TimeZoneStorageType.NATIVE) @Column(name="ThoiDiem",nullable=false,precision=6) public OffsetDateTime at;
 }

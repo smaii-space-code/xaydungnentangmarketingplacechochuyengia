@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<article class="ec-sheet" th:fragment="document(body)" th:with="terms=${body.serviceTerms}">
+  <header class="ec-heading">
+    <h2>Hợp đồng cung ứng dịch vụ</h2>
+    <p th:text="${'Mẫu ' + terms.templateVersion + ' · Sang Connect'}"></p>
+    <p class="hint" th:text="${terms.legalBasis}"></p>
+  </header>
+
+  <div class="ec-parties">
+    <section th:replace="~{electronic-parts :: party(${body.customer},'Bên A — Bên sử dụng dịch vụ')}"></section>
+    <section th:replace="~{electronic-parts :: party(${body.expert},'Bên B — Bên cung ứng dịch vụ')}"></section>
+  </div>
+  <section class="ec-section" th:if="${body.customer.type == 'TO_CHUC'}">
+    <h3>Đại diện Bên A</h3>
+    <p th:text="${#strings.isEmpty(body.clauses.representativeName) ? 'Chưa khai báo người đại diện. Bổ sung thông tin trước khi dùng hợp đồng cho tổ chức.' : body.clauses.representativeName + ' · ' + body.clauses.representativeTitle}"></p>
+    <p class="hint">Hai bên cần đối chiếu tư cách và phạm vi đại diện. Thông tin này do khách hàng khai báo.</p>
+  </section>
+
+  <section class="ec-section">
+    <h3>Điều 1. Phạm vi dịch vụ và thời hạn</h3>
+    <h4 th:text="${body.source.title}"></h4>
+    <p class="pre" th:text="${body.source.scope}"></p>
+    <p class="pre"><strong>Sản phẩm đã thống nhất </strong><span th:text="${body.source.deliverable}"></span></p>
+    <p th:text="${'Thời hạn thực hiện: ' + body.source.days + ' ngày tính từ lần ký quỹ mô phỏng thành công của mốc đầu tiên.'}"></p>
+    <p>
+      <a th:href="${body.source.url}" th:text="${body.source.kind == 'thue' ? 'Đề nghị thuê' : 'Đề xuất được chọn'}"></a>
+      <span th:if="${body.source.version != null}" th:text="${' · Phiên bản thuê ' + body.source.version}"></span>
+      · <a th:href="${body.source.planUrl}" th:text="${'Kế hoạch mốc phiên bản ' + body.planVersion}"></a>
+    </p>
+  </section>
+
+  <section class="ec-section">
+    <h3>Điều 2. Giá dịch vụ, bàn giao và nghiệm thu</h3>
+    <p><strong th:text="${'Tổng giá trị mô phỏng ' + @fmt.money(body.source.total)}"></strong>
+      <span th:text="${' · Phí dự kiến ' + @fmt.money(body.milestones.fee) + ' · Thực nhận dự kiến ' + @fmt.money(body.milestones.net)}"></span></p>
+    <table class="ec-milestones">
+      <thead><tr><th scope="col">Mốc và hạn bàn giao</th><th scope="col">Công việc, sản phẩm và tiêu chí</th><th scope="col">Giá trị</th></tr></thead>
+      <tbody><tr th:each="item,status:${body.milestones.items}">
+        <td><strong th:text="${item.position + '. ' + item.title}"></strong>
+          <p th:text="${item.unit == 'MONTH' and !status.last ? '+' + item.due + ' tháng lịch, tối đa ngày kết thúc dự án' : 'Ngày thứ ' + (status.last ? body.source.days : item.due)}"></p>
+          <p th:text="${'Số lượt sửa ' + item.revisions}"></p>
+        </td>
+        <td><p class="pre"><strong>Công việc </strong><span th:text="${item.work}"></span></p>
+          <p class="pre"><strong>Bàn giao </strong><span th:text="${item.deliverable}"></span></p>
+          <p class="pre"><strong>Nghiệm thu </strong><span th:text="${item.criteria}"></span></p>
+        </td>
+        <td><strong th:text="${@fmt.money(item.amount)}"></strong>
+          <p th:text="${'Phí ' + @fmt.money(item.fee)}"></p><p th:text="${'Thực nhận ' + @fmt.money(item.net)}"></p>
+        </td>
+      </tr></tbody>
+    </table>
+    <p class="pre" th:text="${body.operatingPolicy}"></p>
+  </section>
+
+  <section class="ec-section">
+    <h3>Điều 3. Quyền và nghĩa vụ của các bên</h3>
+    <p class="pre"><strong>Bên A </strong><span th:text="${body.clauses.customerDuties}"></span></p>
+    <p class="pre"><strong>Bên B </strong><span th:text="${body.clauses.expertDuties}"></span></p>
+  </section>
+
+  <section class="ec-section">
+    <h3>Điều 4. Quyền sử dụng sản phẩm và bảo mật</h3>
+    <p class="pre"><strong>Quyền sử dụng sản phẩm </strong><span th:text="${terms.usageRights}"></span></p>
+    <p class="pre"><strong>Bảo mật thông tin </strong><span th:text="${terms.confidentiality}"></span></p>
+  </section>
+
+  <section class="ec-section">
+    <h3>Điều 5. Vi phạm, chấm dứt và giải quyết tranh chấp</h3>
+    <p class="pre" th:text="${terms.liability}"></p>
+    <p class="pre" th:text="${terms.disputeResolution}"></p>
+  </section>
+
+  <section class="ec-section">
+    <h3>Điều 6. Xác nhận và thời điểm thực hiện</h3>
+    <p class="pre" th:text="${terms.electronicAgreement}"></p>
+  </section>
+
+  <section class="ec-section" th:if="${!#strings.isEmpty(body.clauses.additional)}">
+    <h3>Điều 7. Thỏa thuận bổ sung</h3>
+    <p class="pre" th:text="${body.clauses.additional}"></p>
+  </section>
+
+  <aside class="ec-section ec-operator">
+    <h3>Thông tin nền tảng</h3>
+    <p>Đơn vị vận hành: <strong th:text="${body.intermediary.operator}"></strong></p>
+    <p th:replace="~{electronic-parts :: operatorContact(${body.intermediary.phone})}"></p>
+    <p th:if="${!#strings.isEmpty(body.intermediary.representative)}">Đại diện được khai báo: <span th:text="${body.intermediary.representative}"></span></p>
+    <p th:text="${body.intermediary.role}"></p>
+  </aside>
+</article>
+</html>

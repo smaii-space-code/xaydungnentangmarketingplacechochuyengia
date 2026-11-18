@@ -32,12 +32,24 @@ public class AccountService {
         String cccd=clean(f.getSoCccdMoi());
         Checks.require(cccd.isEmpty()||cccd.matches("[0-9]{12}"),"Số CCCD mới phải gồm đúng 12 chữ số từ 0 đến 9.");
     }
-    public NguoiDung register(AccountForm f){return register(f,false);}
-    public NguoiDung registerExpert(AccountForm f){return register(f,true);}
-    private NguoiDung register(AccountForm f,boolean expert){
+    public NguoiDung register(AccountForm f){return register(f,false,null);}
+    public NguoiDung registerExpert(AccountForm f){return register(f,true,null);}
+    NguoiDung registerByAdmin(Long admin,AccountForm f,boolean expert){return register(f,expert,admin);}
+    private NguoiDung register(AccountForm f,boolean expert,Long admin){
         validate(f,true);String mail=email(f.getEmail());unique(mail,null);password(f.getPassword());Checks.require(Objects.equals(f.getPassword(),f.getPasswordAgain()),"Mật khẩu nhập lại không khớp.");
         NguoiDung u=new NguoiDung();u.setHoTen(clean(f.getHoTen()));u.setEmail(mail);u.setMatKhauBam(encoder.encode(f.getPassword()));u.setNguonDangKy(expert?"CHUYEN_GIA":"KHACH_HANG");u.setLaKhachHang(!expert);u.setLaChuyenGia(false);u.setLaQuanTriVien(false);u.setTrangThai("CHO_XAC_THUC");u.setTrangThaiEmail("CHO_XAC_THUC");u.setNgayTao(now());u.setNgayCapNhat(now());db.save(u);
-        HoSoKhachHang h=new HoSoKhachHang();h.maNguoiDung=u.getMaNguoiDung();apply(h,f);db.save(h);access.audit(u.getMaNguoiDung(),"NguoiDung",u.getMaNguoiDung(),"DANG_KY_CHO_OTP",null);return u;
+        HoSoKhachHang h=new HoSoKhachHang();h.maNguoiDung=u.getMaNguoiDung();apply(h,f);db.save(h);
+        if(admin==null)access.audit(u.getMaNguoiDung(),"NguoiDung",u.getMaNguoiDung(),"DANG_KY_CHO_OTP",null);
+        else confirmEmailByAdmin(admin,u);
+        return u;
+    }
+    void confirmEmailByAdmin(Long admin,NguoiDung u){
+        access.admin(admin);
+        u.setTrangThaiEmail("DA_XAC_THUC");
+        u.setThoiDiemXacThucEmail(now());
+        u.setNgayCapNhat(now());
+        if("KHACH_HANG".equals(u.getNguonDangKy()))u.setTrangThai("HOAT_DONG");
+        access.audit(admin,"NguoiDung",u.getMaNguoiDung(),"XAC_NHAN_EMAIL_QUAN_TRI","Xác nhận theo luồng tạo tài khoản của quản trị viên.");
     }
     private OffsetDateTime now(){return OffsetDateTime.now(clock).withOffsetSameInstant(ZoneOffset.UTC);}
     private void apply(HoSoKhachHang h,AccountForm f){h.soDienThoai=optional(f.getSoDienThoai(),10,"Số điện thoại");h.loaiKhachHang=f.getLoaiKhachHang();h.tenToChuc="TO_CHUC".equals(h.loaiKhachHang)?optional(f.getTenToChuc(),200,"Tên tổ chức"):null;h.diaChi=optional(f.getDiaChi(),250,"Địa chỉ");h.gioiThieu=optional(f.getGioiThieu(),2000,"Giới thiệu");}

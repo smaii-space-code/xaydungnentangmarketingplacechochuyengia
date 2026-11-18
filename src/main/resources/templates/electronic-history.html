@@ -1,1 +1,10 @@
-<!DOCTYPE html><html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: page(~{::main})}"><main class="econtract-area"><link rel="stylesheet" th:href="@{/css/electronic-contract.css}"><link rel="stylesheet" th:href="@{/css/milestone-plan.css}"><a th:href="@{/hop-dong/{id}(id=${contractId})}">← Hợp đồng hiện tại</a><h1 th:text="${'Bản chụp hợp đồng HĐ-'+contractId+' · Phiên bản '+read.document.version}"></h1><p>Đây là bản chụp chỉ đọc. Không thể dùng trang lịch sử để xác nhận phiên bản cũ.</p><p class="ec-digest" th:text="${read.digest}"></p><section th:replace="~{electronic-parts :: body(${read.document.body})}"></section><h2>Bằng chứng xác nhận phiên bản này</h2><p th:if="${read.confirmations.isEmpty()}">Chưa có xác nhận được ghi nhận.</p><p th:each="proof:${read.confirmations}"><span th:text="${proof.actor == read.document.body.customer.id ? read.document.body.customer.name : read.document.body.expert.name}"></span> · <span th:text="${@fmt.offsetDate(proof.at)}"></span></p></main></html>
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: page(~{::main})}">
+<main class="econtract-area">
+  <link rel="stylesheet" th:href="@{/css/electronic-contract.css}">
+  <link rel="stylesheet" th:href="@{/css/milestone-plan.css}">
+  <script th:src="@{/js/contract-signature.js}" defer></script>
+  <h1>Lịch sử hợp đồng</h1>
+  <div class="actions"><a th:href="@{/hop-dong/{id}(id=${contractId})}">← Hợp đồng hiện tại</a><button class="btn secondary" type="button" data-print-contract>In bản này</button></div>
+  <article th:replace="~{electronic-parts :: paper(${read.document.body},${read},${null})}"></article>
+</main></html>

@@ -1,1 +1,23 @@
-<!DOCTYPE html><html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: page(~{::main})}"><main class="econtract-area"><link rel="stylesheet" th:href="@{/css/electronic-contract.css}"><link rel="stylesheet" th:href="@{/css/milestone-plan.css}"><h1 th:text="${action == 'CREATE' ? 'Xác nhận lập hợp đồng điện tử' : action == 'CONFIRM' ? 'Xác nhận hợp đồng điện tử' : action == 'AMEND' ? 'Xác nhận phiên bản điều khoản mới' : 'Xác nhận hủy trước hiệu lực'}"></h1><p th:if="${document != null}" th:text="${'Hợp đồng HĐ-'+document.id+' · Phiên bản '+document.version}"></p><p th:if="${action == 'CREATE'}">Hợp đồng chỉ được tạo khi bạn xác nhận ở cuối trang. Lập hợp đồng chưa thay cho việc hai bên xác nhận cùng phiên bản.</p><section th:replace="~{electronic-parts :: body(${body})}"></section><section th:if="${action == 'CANCEL'}" class="ec-section"><h2>Lý do hủy</h2><p class="pre" th:text="${reason}"></p><p>Hủy hợp đồng này trước hiệu lực. Không hủy giao dịch hoặc hoàn tiền của hợp đồng khác.</p></section><p>Ký quỹ và thanh toán đang được mô phỏng. Thao tác này không tạo giao dịch tiền hoặc tự giải ngân.</p><form th:action="@{/hop-dong-dien-tu/xac-nhan}" method="post"><input type="hidden" name="token" th:value="${token}"><div class="actions"><button class="btn" type="submit" th:text="${action == 'CREATE' ? 'Xác nhận lập hợp đồng' : action == 'CONFIRM' ? 'Tôi xác nhận hợp đồng điện tử phiên bản này' : action == 'AMEND' ? 'Lưu phiên bản điều khoản mới' : 'Xác nhận hủy hợp đồng'}"></button><a th:if="${action == 'CREATE' or action == 'AMEND'}" th:href="@{/hop-dong-dien-tu/sua(token=${token})}">Quay lại chỉnh sửa</a><a th:href="${back}">Về giao dịch</a></div></form></main></html>
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: page(~{::main})}">
+<main class="econtract-area">
+  <link rel="stylesheet" th:href="@{/css/electronic-contract.css}">
+  <link rel="stylesheet" th:href="@{/css/milestone-plan.css}">
+  <script th:src="@{/js/contract-signature.js}" defer></script>
+  <h1 th:text="${action == 'CREATE' ? 'Rà soát trước khi lập hợp đồng' : action == 'CONFIRM' ? 'Rà soát và ký hợp đồng' : action == 'AMEND' ? 'Rà soát điều khoản mới' : 'Rà soát trước khi hủy hợp đồng'}"></h1>
+  <p th:if="${signer != null}">Đọc bản hợp đồng dưới đây, ký bằng chuột hoặc cảm ứng trong ô của em, rồi bấm <strong>Ký và xác nhận</strong>.</p>
+  <p th:if="${action == 'CONFIRM' and signer == null}">Tài khoản của bạn đã xác nhận phiên bản này.</p>
+  <p th:if="${action == 'CREATE'}">Sau khi lập hợp đồng, khách hàng và chuyên gia cần ký cùng phiên bản.</p>
+  <form th:action="@{/hop-dong-dien-tu/xac-nhan}" method="post" data-signature-form>
+    <input type="hidden" name="token" th:value="${token}">
+    <input th:if="${signer != null}" type="hidden" name="signature" value="">
+    <article th:replace="~{electronic-parts :: paper(${body},${read},${signer})}"></article>
+    <section th:if="${action == 'CANCEL'}" class="ec-section"><h2>Lý do hủy</h2><p class="pre" th:text="${reason}"></p></section>
+    <div class="actions">
+      <button class="btn" th:if="${action != 'CONFIRM' or signer != null}" type="submit" th:text="${action == 'CREATE' ? 'Xác nhận lập hợp đồng' : action == 'CONFIRM' ? 'Ký và xác nhận' : action == 'AMEND' ? 'Lưu phiên bản điều khoản mới' : 'Xác nhận hủy hợp đồng'}"></button>
+      <button class="btn secondary" type="button" data-print-contract>In hợp đồng</button>
+      <a th:if="${action == 'CREATE' or action == 'AMEND'}" th:href="@{/hop-dong-dien-tu/sua(token=${token})}">Quay lại chỉnh sửa</a>
+      <a th:href="${back}">Về giao dịch</a>
+    </div>
+  </form>
+</main></html>

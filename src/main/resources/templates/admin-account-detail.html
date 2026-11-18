@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: page(~{::main})}">
+<main>
+  <link rel="stylesheet" th:href="@{/css/admin-account.css}">
+  <p><a th:href="@{/quan-tri}">← Quản trị</a></p>
+  <div class="page-head"><h1 th:text="${account.name}"></h1></div>
+  <section class="panel">
+    <h2>Thông tin tài khoản</h2>
+    <dl>
+      <dt>Mã tài khoản</dt><dd th:text="${account.id}"></dd>
+      <dt>Email</dt><dd th:text="${account.email}"></dd>
+      <dt>Vai trò</dt><dd th:text="${account.role}"></dd>
+      <dt>Trạng thái tài khoản</dt><dd th:text="${@fmt.status(account.status)}"></dd>
+      <dt>Xác thực email</dt><dd th:text="${@fmt.status(account.emailStatus)}"></dd>
+      <dt th:if="${account.verified != null}">Ngày xác thực</dt>
+      <dd th:if="${account.verified != null}" th:text="${@fmt.offsetDate(account.verified)}"></dd>
+      <dt>Ngày tạo</dt><dd th:text="${@fmt.offsetDate(account.created)}"></dd>
+    </dl>
+    <form th:if="${account.canConfirmOldAdminAccount}" method="post"
+          th:action="@{/quan-tri/tai-khoan/{id}/xac-nhan-email(id=${account.id})}">
+      <p>Tài khoản này được tạo từ trang quản trị trước khi áp dụng xác nhận email của admin.</p>
+      <button class="btn">Xác nhận email</button>
+    </form>
+    <p th:if="${account.status == 'CHO_XAC_THUC' and !account.canConfirmOldAdminAccount}">Chủ tài khoản vào
+      <a th:href="@{/dang-nhap}">Đăng nhập</a>, nhập email và mật khẩu rồi chọn “Gửi mã xác thực”.
+      Nếu gửi thư thất bại, dùng chức năng gửi lại trong luồng xác thực.</p>
+  </section>
+  <section class="panel" th:if="${account.contact != null}" th:with="h=${account.contact}">
+    <h2>Hồ sơ liên hệ</h2>
+    <dl>
+      <dt>Số điện thoại</dt><dd th:text="${h.phone ?: '—'}"></dd>
+      <dt>Loại khách hàng</dt><dd th:text="${h.type == 'TO_CHUC' ? 'Tổ chức' : 'Cá nhân'}"></dd>
+      <dt>Tổ chức</dt><dd th:text="${h.organization ?: '—'}"></dd>
+      <dt>Địa chỉ</dt><dd th:text="${h.address ?: '—'}"></dd>
+      <dt>Giới thiệu</dt><dd class="pre" th:text="${h.introduction ?: '—'}"></dd>
+      <dt th:if="${h.maskedCccd != null}">CCCD</dt>
+      <dd th:if="${h.maskedCccd != null}" th:text="${h.maskedCccd}"></dd>
+    </dl>
+  </section>
+  <section class="panel" th:if="${account.expert != null}" th:with="h=${account.expert}">
+    <h2>Hồ sơ chuyên gia</h2>
+    <dl>
+      <dt>Trạng thái hồ sơ</dt><dd th:text="${@fmt.status(h.state)}"></dd>
+      <dt>Lĩnh vực chuyên môn</dt><dd th:text="${h.field}"></dd>
+      <dt>Giới thiệu chuyên môn</dt><dd class="pre" th:text="${h.bio}"></dd>
+      <dt th:if="${h.version > 0}">Phiên bản</dt>
+      <dd th:if="${h.version > 0}"><a th:href="@{/quan-tri/chuyen-gia/{id}(id=${account.id})}"
+        th:text="${'Xem lịch sử xét duyệt · phiên bản ' + h.version}"></a></dd>
+    </dl>
+  </section>
+  <section class="panel" th:if="${account.expertAccount}">
+    <h2>Ảnh đại diện</h2>
+    <img th:if="${account.hasAvatar}" class="admin-avatar"
+         th:src="@{/quan-tri/tai-khoan/{id}/anh-dai-dien(id=${account.id})}" alt="Ảnh đại diện hiện tại">
+    <span th:unless="${account.hasAvatar}" class="admin-avatar admin-avatar-default"
+          role="img" aria-label="Ảnh đại diện mặc định">CG</span>
+    <details>
+      <summary>Đổi ảnh đại diện</summary>
+      <form method="post" enctype="multipart/form-data"
+            th:action="@{/quan-tri/tai-khoan/{id}/anh-dai-dien(id=${account.id})}">
+        <div th:replace="~{admin-account-avatar :: upload(true)}"></div>
+        <button class="btn">Lưu ảnh đại diện</button>
+      </form>
+    </details>
+  </section>
+  <section class="panel" th:if="${account.customer}">
+    <h2>Chuyển vai trò</h2>
+    <p th:if="${account.conversionBlock != null}" th:text="${account.conversionBlock}"></p>
+    <a th:if="${account.conversionBlock == null}" class="btn" th:href="@{/quan-tri/tai-khoan/{id}/chuyen-chuyen-gia(id=${account.id})}">Chuyển sang chuyên gia</a>
+  </section>
+  <script th:src="@{/js/admin-account.js}" defer></script>
+</main>
+</html>

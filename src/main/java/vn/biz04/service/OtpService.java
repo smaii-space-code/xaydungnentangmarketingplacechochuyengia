@@ -20,6 +20,7 @@ public class OtpService {
     private final int sendAccount,sendIp,tryAccount,tryIp,cooldown;
     public record Result(String token,boolean success,String message){}
     public record View(String email,OffsetDateTime expires,OffsetDateTime resendAfter,String purpose,long remainingSeconds){}
+    public record PendingLogin(Long id,String email,int epoch,Instant expires){}
     public OtpService(Store db,AccountService accounts,AccountCrypto crypto,OtpMailGateway mail,TransactionTemplate tx,Clock clock,ExpertApplications experts,
         @Value("${biz.otp.send-account-hour:5}")int sendAccount,@Value("${biz.otp.send-ip-hour:20}")int sendIp,@Value("${biz.otp.try-account-hour:20}")int tryAccount,@Value("${biz.otp.try-ip-hour:100}")int tryIp,@Value("${biz.otp.cooldown-seconds:60}")int cooldown){
         this.experts=experts;this.db=db;this.accounts=accounts;this.crypto=crypto;this.mail=mail;this.tx=tx;this.clock=clock;this.sendAccount=sendAccount;this.sendIp=sendIp;this.tryAccount=tryAccount;this.tryIp=tryIp;this.cooldown=Math.max(60,cooldown);
@@ -78,6 +79,32 @@ public class OtpService {
         db.lockEntity(NguoiDung.class,u.getMaNguoiDung());
         Result limit=sendLimit(u,"DANG_KY",address,ip,null);return limit==null?issue(u,address,"DANG_KY"):limit;
     });}
+    public boolean awaitingRegistrationEmail(NguoiDung u){
+        return "CHO_XAC_THUC".equals(u.getTrangThai()) && "CHO_XAC_THUC".equals(u.getTrangThaiEmail());
+    }
+    public PendingLogin pendingLogin(NguoiDung u){
+        return new PendingLogin(u.getMaNguoiDung(),u.getEmail(),u.getPhienBaoMat(),clock.instant().plusSeconds(600));
+    }
+    public String pendingLoginEmail(PendingLogin proof){return tx.execute(s->{
+        requireLiveProof(proof);
+        return maskEmail(checkPendingLogin(db.get(NguoiDung.class,proof.id()),proof).getEmail());
+    });}
+    public Result sendPendingLoginCode(PendingLogin proof,String ip){return tx.execute(s->{
+        requireLiveProof(proof);
+        gate();
+        NguoiDung u=checkPendingLogin(db.lockEntity(NguoiDung.class,proof.id()),proof);
+        Result limit=sendLimit(u,"DANG_KY",proof.email(),ip,null);
+        return limit==null?issue(u,proof.email(),"DANG_KY"):limit;
+    });}
+    private void requireLiveProof(PendingLogin proof){
+        Checks.require(proof!=null&&clock.instant().isBefore(proof.expires()),"Phiên xác thực đã hết hạn. Vui lòng đăng nhập lại.");
+    }
+    private NguoiDung checkPendingLogin(NguoiDung u,PendingLogin proof){
+        requireLiveProof(proof);
+        Checks.require(awaitingRegistrationEmail(u)&&u.getPhienBaoMat()==proof.epoch()&&u.getEmail().equals(proof.email()),
+                "Tài khoản đã thay đổi hoặc không còn chờ xác thực. Vui lòng đăng nhập lại.");
+        return u;
+    }
     public Result startEmailChange(Long actor,String email,String password,String ip){return tx.execute(s->{
         gate();NguoiDung u=db.lockEntity(NguoiDung.class,actor);Checks.require("HOAT_DONG".equals(u.getTrangThai()),"Tài khoản chưa hoạt động.");accounts.checkPassword(u,password);
         String next=AccountService.email(email);Checks.require(!next.equals(u.getEmail()),"Email mới phải khác email hiện tại.");accounts.unique(next,actor);
@@ -108,7 +135,8 @@ public class OtpService {
         return new Result(token,sent,sent?SENT:delivery==OtpMailGateway.Delivery.RECIPIENT_MISSING?"Địa chỉ email nhận không tồn tại. Vui lòng kiểm tra lại.":FAILED);
     }
     public View view(String token,Long actor){return tx.execute(s->viewOf(challenge(token,actor)));}
-    private View viewOf(MaXacThucOTP o){int at=o.email.indexOf('@');String masked=o.email.substring(0,1)+"***"+o.email.substring(at);long seconds="CHO_XAC_THUC".equals(o.trangThai)?Math.max(0,Math.min(300,Duration.between(now(),o.thoiDiemHetHan).getSeconds())):0;return new View(masked,o.thoiDiemHetHan,o.thoiDiemTao.plusSeconds(cooldown),o.loaiOTP,seconds);}
+    private static String maskEmail(String email){return email.substring(0,1)+"***"+email.substring(email.indexOf('@'));}
+    private View viewOf(MaXacThucOTP o){long seconds="CHO_XAC_THUC".equals(o.trangThai)?Math.max(0,Math.min(300,Duration.between(now(),o.thoiDiemHetHan).getSeconds())):0;return new View(maskEmail(o.email),o.thoiDiemHetHan,o.thoiDiemTao.plusSeconds(cooldown),o.loaiOTP,seconds);}
     public Result startTakeover(Long actor,String email,String name,String ip){return tx.execute(s->{
         gate();NguoiDung u=db.lockEntity(NguoiDung.class,actor);
         Checks.require("CHO_TIEP_QUAN".equals(u.getTrangThai())&&"MAU".equals(u.getLoaiTaiKhoan()),"Tài khoản không còn chờ tiếp quản.");
